@@ -28,6 +28,7 @@ function DisplayPlaylists({ playlists, onAddPlaylist }: DisplayPlaylistsProps) {
             <DisplayPlaylist
               playlist={playlist}
               onAddPlaylist={onAddPlaylist}
+              key={playlist.id}
             />
           );
         })}

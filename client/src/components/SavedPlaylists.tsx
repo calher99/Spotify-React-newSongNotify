@@ -24,7 +24,7 @@ function SavedPlaylists({ playlists }: { playlists: PlaylistSaved[] }) {
     >
       <List component="nav" aria-label="playlist list" sx={{ width: "300px" }}>
         {playlists.map((playlist: PlaylistSaved) => {
-          return <SavedPlaylistItem playlist={playlist} />;
+          return <SavedPlaylistItem playlist={playlist} key={playlist.id} />;
         })}
       </List>
     </Box>

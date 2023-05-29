@@ -15,6 +15,7 @@ import {
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
+import { PlayerContext } from "../context/player-context";
 
 function DisplayTracks({
   tracks,
@@ -23,6 +24,11 @@ function DisplayTracks({
   tracks: Track[];
   onClose: () => void;
 }) {
+  const ctx = React.useContext(PlayerContext);
+
+  const playHandler = (uri: string) => {
+    ctx.onPlay(uri);
+  };
   return (
     //box with different background color
     //album picture , song artist and duration
@@ -30,7 +36,12 @@ function DisplayTracks({
     //able to save it to a playlist
     //toggle button to hide the information
     <Box sx={{ width: "400px" }}>
-      <IconButton onClick={onClose}>
+      <IconButton
+        onClick={() => {
+          onClose();
+          ctx.onPause();
+        }}
+      >
         <CloseIcon></CloseIcon>
       </IconButton>
       <List component="nav" aria-label="tracks list">
@@ -44,7 +55,12 @@ function DisplayTracks({
                 },
               }}
             >
-              <IconButton sx={{ ml: 1.5, mr: 1.5 }}>
+              <IconButton
+                sx={{ ml: 1.5, mr: 1.5 }}
+                onClick={() => {
+                  playHandler(track.uri);
+                }}
+              >
                 <PlayArrowIcon />
               </IconButton>
               <ListItemAvatar>

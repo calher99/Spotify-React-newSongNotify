@@ -11,6 +11,8 @@ import SignIn from "./pages/SignIn";
 import { AuthContext } from "./context/auth-context";
 import SpotifyConnection from "./pages/SpotifyConnection";
 import { useHttpClient } from "./hooks/http-hook";
+import { PlayerContext } from "./context/player-context";
+import Player from "./components/Player";
 
 const darkTheme = createTheme({
   palette: {
@@ -21,11 +23,20 @@ const darkTheme = createTheme({
 function App() {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [track, setTrack] = useState<string | null>(null);
 
   const [spotiToken, setSpotiToken] = useState<string | null>(null);
 
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
+  const playHandler = useCallback((uri: string) => {
+    setIsPlaying(true);
+    setTrack(uri);
+  }, []);
+  const pauseHandler = useCallback(() => {
+    setIsPlaying(false);
+  }, []);
   const loginSpoti = useCallback(
     (refreshToken: string, accessToken: string) => {
       localStorage.setItem(
@@ -112,24 +123,37 @@ function App() {
           onSpotiAuth: loginSpoti,
         }}
       >
-        <ThemeProvider theme={darkTheme}>
-          <CssBaseline />
-          <BrowserRouter>
-            {token && <NavBar />}
-            <Routes>
-              {!token && <Route path="/" element={<SignIn />} />}
-              {token && <Route path="/" element={<Login />} />}
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route
-                path="/spotify-connection"
-                element={<SpotifyConnection />}
-              />
-              <Route path="/playlists" element={<Playlists />} />
-              <Route path="/artists" element={<Login />} />
-            </Routes>
-          </BrowserRouter>
-        </ThemeProvider>
+        <PlayerContext.Provider
+          value={{
+            onPlay: playHandler,
+            onPause: pauseHandler,
+          }}
+        >
+          <ThemeProvider theme={darkTheme}>
+            <CssBaseline />
+            <BrowserRouter>
+              {token && <NavBar />}
+              <Routes>
+                {!token && <Route path="/" element={<SignIn />} />}
+                {token && <Route path="/" element={<Login />} />}
+                <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route
+                  path="/spotify-connection"
+                  element={<SpotifyConnection />}
+                />
+                <Route path="/playlists" element={<Playlists />} />
+                <Route path="/artists" element={<Login />} />
+              </Routes>
+              {isPlaying && (
+                <Player
+                  accessToken={spotiToken as string}
+                  trackUri={track as string}
+                />
+              )}
+            </BrowserRouter>
+          </ThemeProvider>
+        </PlayerContext.Provider>
       </AuthContext.Provider>
     </>
   );
