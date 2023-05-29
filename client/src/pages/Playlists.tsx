@@ -23,7 +23,7 @@ interface PlaylistSaved {
   name: string;
   image: string;
   songs: string[];
-  soptifyId: string;
+  spotifyId: string;
   user: string;
 }
 
@@ -56,7 +56,6 @@ function Playlists() {
           method: "GET",
         }
       );
-      console.log(responseData);
       setSavedPlaylists(responseData.data.playlists);
     };
 
