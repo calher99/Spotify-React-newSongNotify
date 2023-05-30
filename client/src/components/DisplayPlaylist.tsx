@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import React from "react";
-import { Playlist, PlaylistTrack } from "../types";
+import { Playlist, PlaylistTrack, Track } from "../types";
 import axios from "axios";
 import { AuthContext } from "../context/auth-context";
 
@@ -25,16 +25,28 @@ function DisplayPlaylist({ playlist, onAddPlaylist }: DisplayPlaylistProps) {
     tracks: PlaylistTrack[]
   ) => {
     //1. Get the tracks
-    const responseData = await axios(
-      `https://api.spotify.com/v1/playlists/${id}/tracks?limit=50`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + ctx.spotifyToken,
-        },
+    let offset = 0;
+    let totalTracks: Track[] = [];
+
+    while (true) {
+      let responseData = await axios(
+        `https://api.spotify.com/v1/playlists/${id}/tracks?limit=50&offset=${offset}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + ctx.spotifyToken,
+          },
+        }
+      );
+      if (responseData.data.items.length > 0) {
+        totalTracks = totalTracks.concat(responseData.data.items);
+        offset += 50; // prepare for the next iteration
+      } else {
+        break; // no more playlists, stop the loop
       }
-    );
-    const trackIds = responseData.data.items.map((item: any) => item.track.id);
+    }
+
+    const trackIds = totalTracks.map((item: any) => item.track.id);
 
     const playlistObject = {
       id: id,

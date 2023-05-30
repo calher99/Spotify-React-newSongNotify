@@ -37,18 +37,10 @@ function Playlists() {
   const [playlists, setPlaylists] = useState<Playlist[]>();
   const [savedPlaylists, setSavedPlaylists] = useState<PlaylistSaved[]>([]);
 
-  //get user info
   useEffect(() => {
-    // TI: Get by user playlists to avoid this call
-    const getUser = async () => {
-      const responseData = await sendRequest(
-        "http://localhost:4080/api/spotify/auth-user",
-        "POST",
-        JSON.stringify({ accessToken: ctx.spotifyToken }),
-        { "Content-Type": "application/json" }
-      );
-      setUserId(responseData.data.body.id);
-    };
+    //For ChatGPT: Why sometimes this useEffect is not run or at least we dont enter into the if (ctx.spotifyToken) {
+    //   getUserPlaylists();
+    // }
 
     // Get saved playlists for the user
     const getUserPlaylists = async () => {
@@ -62,10 +54,9 @@ function Playlists() {
     };
 
     if (ctx.spotifyToken) {
-      getUser();
       getUserPlaylists();
     }
-  }, []);
+  }, [ctx.spotifyToken]);
 
   const playlistSavedHandler = (newPlaylist: PlaylistSaved) => {
     setSavedPlaylists((prev: PlaylistSaved[] | []) => {
@@ -74,13 +65,26 @@ function Playlists() {
   };
 
   const getPlaylistsHandler = async () => {
-    const responseData = await sendRequest(
-      "http://localhost:4080/api/spotify/get-playlists",
-      "POST",
-      JSON.stringify({ accessToken: ctx.spotifyToken, userId: userId }),
-      { "Content-Type": "application/json" }
-    );
-    setPlaylists(responseData.data.body.items);
+    let offset = 0;
+    let totalPlaylists: Playlist[] = [];
+    while (true) {
+      let responseData = await axios(
+        `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + ctx.spotifyToken,
+          },
+        }
+      );
+      if (responseData.data.items.length > 0) {
+        totalPlaylists = totalPlaylists.concat(responseData.data.items);
+        offset += 50; // prepare for the next iteration
+      } else {
+        break; // no more playlists, stop the loop
+      }
+    }
+    setPlaylists(totalPlaylists);
     setDisplayPlaylists(true);
   };
   const togglePlaylists = async () => {
