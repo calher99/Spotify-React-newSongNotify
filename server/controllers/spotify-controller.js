@@ -51,21 +51,6 @@ const refresh = async (req, res, next) => {
     });
 };
 
-const getMe = async (req, res, next) => {
-  const spotifyApi = new SpotifyWebApi();
-  spotifyApi.setAccessToken(req.body.accessToken);
-  try {
-    const responseData = await spotifyApi.getMe()
-    res.status(201);
-    res.json({
-      data: responseData,
-    });
-  } catch (error) {
-    console.log(error);
-    return next(new HttpError("Error refreshing the token", 500));
-  }
-};
-
 const userPlaylists = async (req, res, next) => {
   const spotifyApi = new SpotifyWebApi();
   spotifyApi.setAccessToken(req.body.accessToken);
@@ -83,5 +68,4 @@ const userPlaylists = async (req, res, next) => {
 
 exports.refresh = refresh;
 exports.logIn = logIn;
-exports.getMe = getMe;
 exports.userPlaylists = userPlaylists;
