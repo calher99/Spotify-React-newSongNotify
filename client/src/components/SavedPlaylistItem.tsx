@@ -27,6 +27,8 @@ interface PlaylistSaved {
   songs: string[];
   spotifyId: string;
   user: string;
+  updatedAt: Date;
+  createdAt: Date;
 }
 
 function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
@@ -69,6 +71,12 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
 
     closeHandler();
   };
+  const updated = new Date(playlist.updatedAt);
+  const options: Intl.DateTimeFormatOptions = {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+  };
   return (
     <>
       <ListItem key={playlist.id}>
@@ -81,7 +89,14 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
             }
           />
         </ListItemAvatar>
-        <ListItemText primary={playlist.name} sx={{ width: "250px" }} />
+        <ListItemText
+          primary={playlist.name}
+          secondary={`Your last check: ${updated.toLocaleString(
+            "en-GB",
+            options
+          )}`}
+          sx={{ width: "250px" }}
+        />
         <Box sx={{ width: "100px", display: "flex", gap: 2 }}>
           {!showTracks && (
             <Tooltip

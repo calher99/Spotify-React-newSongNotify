@@ -9,6 +9,8 @@ interface PlaylistSaved {
   songs: string[];
   spotifyId: string;
   user: string;
+  updatedAt: Date;
+  createdAt: Date;
 }
 
 function SavedPlaylists({ playlists }: { playlists: PlaylistSaved[] }) {
