@@ -13,6 +13,8 @@ import SpotifyConnection from "./pages/SpotifyConnection";
 import { useHttpClient } from "./hooks/http-hook";
 import { PlayerContext } from "./context/player-context";
 import Player from "./components/Player";
+import Artists from "./pages/Artists";
+import Podcasts from "./pages/Podcasts";
 
 const darkTheme = createTheme({
   palette: {
@@ -149,7 +151,8 @@ function App() {
                   element={<SpotifyConnection />}
                 />
                 <Route path="/playlists" element={<Playlists />} />
-                <Route path="/artists" element={<Login />} />
+                <Route path="/artists" element={<Artists />} />
+                <Route path="/podcasts" element={<Podcasts />} />
               </Routes>
               {isPlaying && (
                 <Player

@@ -10,11 +10,13 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CloseIcon from "@mui/icons-material/Close";
+import Fade from "@mui/material/Fade";
 import { PlayerContext } from "../context/player-context";
 
 function DisplayTracks({
@@ -29,12 +31,11 @@ function DisplayTracks({
   const playHandler = (uri: string) => {
     ctx.onPlay(uri);
   };
+
+  const addHandler = () => {
+    console.log("Add to a playlist");
+  };
   return (
-    //box with different background color
-    //album picture , song artist and duration
-    //Able to play the song
-    //able to save it to a playlist
-    //toggle button to hide the information
     <Box sx={{ width: "400px" }}>
       <List component="nav" aria-label="tracks list">
         {tracks.map((track: Track) => {
@@ -71,9 +72,15 @@ function DisplayTracks({
                   .map((artist) => artist.name)
                   .join(" & ")}
               />
-              <IconButton sx={{ ml: 1.5, mr: 1.5 }}>
-                <AddCircleIcon />
-              </IconButton>
+              <Tooltip
+                TransitionComponent={Fade}
+                TransitionProps={{ timeout: 600 }}
+                title="Add to a playlist"
+              >
+                <IconButton sx={{ ml: 1.5, mr: 1.5 }} onClick={addHandler}>
+                  <AddCircleIcon />
+                </IconButton>
+              </Tooltip>
             </ListItem>
           );
         })}

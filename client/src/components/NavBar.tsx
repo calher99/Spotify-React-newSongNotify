@@ -58,7 +58,7 @@ export default function NavBar() {
               component="div"
               sx={{ cursor: "pointer" }}
               onClick={() => {
-                navigate("/playlists");
+                navigate("/artists");
               }}
             >
               Artists
@@ -68,7 +68,7 @@ export default function NavBar() {
               component="div"
               sx={{ cursor: "pointer" }}
               onClick={() => {
-                navigate("/playlists");
+                navigate("/podcasts");
               }}
             >
               Podcasts
