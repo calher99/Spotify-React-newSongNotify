@@ -12,6 +12,8 @@ router.use(checkAuth);
 
 router.post("/add" , playlistsControllers.add)
 
+router.post("/update/:playlistId" , playlistsControllers.update)
+
 
 
 

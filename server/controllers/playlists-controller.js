@@ -8,28 +8,32 @@ const getPlaylistsByUserId = async (req, res, next) => {
   let playlists;
 
   try {
-    playlists = await Playlist.find({user: userId});
+    playlists = await Playlist.find({ user: userId });
   } catch (error) {
     return next(
-      new HttpError("Error while retrieving the playlists, try again please", 500)
+      new HttpError(
+        "Error while retrieving the playlists, try again please",
+        500
+      )
     );
   }
   if (!playlists) {
-    new HttpError("Could not find a playlist for the provided id", 404)
+    new HttpError("Could not find a playlist for the provided id", 404);
   } else {
- 
     //Getters : true so we get rid of an underscore in the id
-    res.json({ playlists: playlists.map(playlist => playlist.toObject({getters: true})) });
+    res.json({
+      playlists: playlists.map((playlist) =>
+        playlist.toObject({ getters: true })
+      ),
+    });
   }
-}
+};
 
 const add = async (req, res, next) => {
-  
-  
   const createdPlaylist = new Playlist({
     spotifyId: req.body.id,
-    name:req.body.name,
-    image:req.body.image, 
+    name: req.body.name,
+    image: req.body.image,
     songs: req.body.songs,
     user: req.usedData.userId,
   });
@@ -61,9 +65,51 @@ const add = async (req, res, next) => {
     );
   }
 
-  res.status(201).json({ playlist: createdPlaylist.toObject({ getters: true }) });
+  res
+    .status(201)
+    .json({ playlist: createdPlaylist.toObject({ getters: true }) });
+};
 
+const update = async (req, res, next) => {
+  // req.params.playlistId,
+  // req.body.songs,
+  // req.usedData.userId,
+
+  let updatedPlaylist;
+  try {
+    updatedPlaylist = await Playlist.findById(req.params.playlistId);
+  } catch (error) {
+    return next(
+      new HttpError("Error while retrieving a playlist, try again please", 500)
+    );
+  }
+  //We dont want to let another verified user to modify a playlist that is not his
+  //Autentication
+  if (updatedPlaylist.user.toString() !== req.usedData.userId) {
+    return next(
+      new HttpError("You are not allowed to edit this playlist", 500)
+    );
+  }
+
+  //Create new song array
+  updatedPlaylist.songs = updatedPlaylist.songs.concat(req.body);
+
+  try {
+    await updatedPlaylist.save();
+  } catch (error) {
+    return next(
+      new HttpError(
+        "Error while saving updated playlist, try again please",
+        500
+      )
+    );
+  }
+
+  res
+    .status(201)
+    .json({ playlist: updatedPlaylist.toObject({ getters: true }) });
 };
 
 exports.add = add;
-exports.getPlaylistsByUserId = getPlaylistsByUserId
+exports.getPlaylistsByUserId = getPlaylistsByUserId;
+exports.update = update;

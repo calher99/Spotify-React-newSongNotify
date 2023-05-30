@@ -66,9 +66,21 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
     setShowTracks(false);
     playerCtx.onPause();
   };
-  const updateDbHandler = () => {
-    console.log("update");
 
+  const updateDbHandler = async () => {
+    //API call for updating the playlist tracks
+    const songsToAdd = newTracks.map((track) => track.id);
+    const responseData = await axios({
+      url: `http://localhost:4080/api/playlists/update/${playlist.id}`,
+      method: "POST",
+      data: songsToAdd,
+      headers: {
+        Authorization: "Bearer " + ctx.token,
+      },
+    });
+    //TI: when refreshed until we dont log out the new tracks continue to appear
+    // console.log(responseData);
+    setNewTracks([]);
     closeHandler();
   };
   const updated = new Date(playlist.updatedAt);
