@@ -91,12 +91,21 @@ function Playlists() {
   };
   return (
     <>
-      <Grid container spacing={2}>
-        <Typography sx={{ mt: 4, textAlign: "center", width: "100%" }}>
+      <Grid container spacing={2} sx={{ pt: 10, pb: 10 }}>
+        <Typography
+          variant="h6"
+          sx={{ mt: 4, textAlign: "center", width: "100%" }}
+        >
           Save a playlist and get notified when a song is added!!
         </Typography>
-        <Grid container direction="row" item alignItems="stretch" spacing={3}>
-          <Grid item xs={12} md={6} lg={6}>
+        <Grid container sx={{ display: "flex" }}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={6}
+            sx={{ backgroundColor: (theme) => theme.palette.grey[900] }}
+          >
             <Box
               sx={{
                 display: "flex",
@@ -143,7 +152,13 @@ function Playlists() {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            lg={6}
+            sx={{ backgroundColor: (theme) => theme.palette.grey[900] }}
+          >
             <Container
               sx={{
                 mt: 4,
@@ -158,7 +173,7 @@ function Playlists() {
           </Grid>
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          <Typography>Saved Playlists</Typography>
+          <Typography variant="h4">Your Saved Playlists</Typography>
           <SavedPlaylists playlists={savedPlaylists ?? []} />
         </Grid>
       </Grid>

@@ -17,6 +17,12 @@ import Player from "./components/Player";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
+    grey: {
+      900: "#141414", // darker color for level 1
+      800: "#1f1f1f", // color for level 2
+      700: "#424242", // color for level 3
+      600: "#616161", // color for level 4
+    },
   },
 });
 

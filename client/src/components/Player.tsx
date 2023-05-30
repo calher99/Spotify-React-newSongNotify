@@ -14,7 +14,7 @@ function Player({ accessToken, trackUri }: PlayerProps) {
 
   if (!accessToken) return null;
   return (
-    <Box sx={{ position: "fixed", bottom: 0, width: "100%" }}>
+    <Box sx={{ position: "fixed", bottom: 0, width: "100%", zIndex: 10 }}>
       <SpotifyPlayer
         token={accessToken}
         showSaveIcon

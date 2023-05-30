@@ -36,14 +36,6 @@ function DisplayTracks({
     //able to save it to a playlist
     //toggle button to hide the information
     <Box sx={{ width: "400px" }}>
-      <IconButton
-        onClick={() => {
-          onClose();
-          ctx.onPause();
-        }}
-      >
-        <CloseIcon></CloseIcon>
-      </IconButton>
       <List component="nav" aria-label="tracks list">
         {tracks.map((track: Track) => {
           return (

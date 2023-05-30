@@ -16,13 +16,12 @@ function SavedPlaylists({ playlists }: { playlists: PlaylistSaved[] }) {
     <Box
       sx={{
         width: "100%",
-        height: 300,
         overflow: "auto",
         bgcolor: "background.paper",
         display: "flex",
       }}
     >
-      <List component="nav" aria-label="playlist list" sx={{ width: "300px" }}>
+      <List component="nav" aria-label="playlist list" sx={{}}>
         {playlists.map((playlist: PlaylistSaved) => {
           return <SavedPlaylistItem playlist={playlist} key={playlist.id} />;
         })}

@@ -6,14 +6,19 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import Fade from "@mui/material/Fade";
 import axios from "axios";
 import { AuthContext } from "../context/auth-context";
 import React, { useState } from "react";
 import { Track } from "../types";
 import DisplayTracks from "./DisplayTracks";
+import CloseIcon from "@mui/icons-material/Close";
+import { PlayerContext } from "../context/player-context";
 
 interface PlaylistSaved {
   id: string;
@@ -26,6 +31,7 @@ interface PlaylistSaved {
 
 function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
   const ctx = React.useContext(AuthContext);
+  const playerCtx = React.useContext(PlayerContext);
 
   const [newTracks, setNewTracks] = useState<Track[]>([]);
   const [showTracks, setShowTracks] = useState<boolean>(false);
@@ -56,23 +62,16 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
   };
   const closeHandler = () => {
     setShowTracks(false);
+    playerCtx.onPause();
+  };
+  const updateDbHandler = () => {
+    console.log("update");
+
+    closeHandler();
   };
   return (
     <>
-      <ListItem
-        key={playlist.id}
-        secondaryAction={
-          <IconButton
-            edge="end"
-            aria-label="comments"
-            onClick={() => {
-              refreshPlaylistHandler(playlist);
-            }}
-          >
-            <CachedIcon />
-          </IconButton>
-        }
-      >
+      <ListItem key={playlist.id}>
         <ListItemAvatar>
           <Avatar
             alt={`Avatar ${playlist.name}`}
@@ -82,7 +81,51 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
             }
           />
         </ListItemAvatar>
-        <ListItemText primary={playlist.name} />
+        <ListItemText primary={playlist.name} sx={{ width: "250px" }} />
+        <Box sx={{ width: "100px", display: "flex", gap: 2 }}>
+          {!showTracks && (
+            <Tooltip
+              placement="right"
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              title="Check for new songs"
+            >
+              <IconButton
+                edge="end"
+                aria-label="comments"
+                onClick={() => {
+                  refreshPlaylistHandler(playlist);
+                }}
+              >
+                <CachedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {showTracks && (
+            <Tooltip
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              title="Mark tracks as checked"
+            >
+              <IconButton onClick={updateDbHandler}>
+                <DoneAllIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {showTracks && (
+            <Tooltip
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              title="Close"
+            >
+              <IconButton onClick={closeHandler}>
+                <CloseIcon></CloseIcon>
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
       </ListItem>
       {showTracks && (
         <DisplayTracks tracks={newTracks as Track[]} onClose={closeHandler} />
