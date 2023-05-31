@@ -17,6 +17,7 @@ import DisplayPlaylists from "../components/DisplayPlaylists";
 import { Playlist } from "../types";
 import axios from "axios";
 import SavedPlaylists from "../components/SavedPlaylists";
+import { PlayerContext } from "../context/player-context";
 
 interface PlaylistSaved {
   id: string;
@@ -31,6 +32,7 @@ interface PlaylistSaved {
 
 function Playlists() {
   const ctx = React.useContext(AuthContext);
+  const playlistCtx = React.useContext(PlayerContext);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [userId, setUserId] = useState<string>("");
   const [displayPlaylists, setDisplayPlaylists] = useState<boolean>(false);
@@ -38,9 +40,33 @@ function Playlists() {
   const [savedPlaylists, setSavedPlaylists] = useState<PlaylistSaved[]>([]);
 
   useEffect(() => {
-    //For ChatGPT: Why sometimes this useEffect is not run or at least we dont enter into the if (ctx.spotifyToken) {
-    //   getUserPlaylists();
-    // }
+    //Load always all the user Spotify Playlists
+    const getPlaylistsHandler = async () => {
+      let offset = 0;
+      let totalPlaylists: Playlist[] = [];
+      while (true) {
+        let responseData = await axios(
+          `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + ctx.spotifyToken,
+            },
+          }
+        );
+        if (responseData.data.items.length > 0) {
+          totalPlaylists = totalPlaylists.concat(responseData.data.items);
+          offset += 50; // prepare for the next iteration
+        } else {
+          break; // no more playlists, stop the loop
+        }
+      }
+      //Set ctx
+      playlistCtx.setPlaylists(totalPlaylists);
+      //Old code
+      // setPlaylists(totalPlaylists);
+      setDisplayPlaylists(true);
+    };
 
     // Get saved playlists for the user
     const getUserPlaylists = async () => {
@@ -55,6 +81,7 @@ function Playlists() {
 
     if (ctx.spotifyToken) {
       getUserPlaylists();
+      getPlaylistsHandler();
     }
   }, [ctx.spotifyToken]);
 
@@ -64,31 +91,8 @@ function Playlists() {
     });
   };
 
-  const getPlaylistsHandler = async () => {
-    let offset = 0;
-    let totalPlaylists: Playlist[] = [];
-    while (true) {
-      let responseData = await axios(
-        `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + ctx.spotifyToken,
-          },
-        }
-      );
-      if (responseData.data.items.length > 0) {
-        totalPlaylists = totalPlaylists.concat(responseData.data.items);
-        offset += 50; // prepare for the next iteration
-      } else {
-        break; // no more playlists, stop the loop
-      }
-    }
-    setPlaylists(totalPlaylists);
-    setDisplayPlaylists(true);
-  };
   const togglePlaylists = async () => {
-    if (playlists) {
+    if (playlistCtx.userPlaylists) {
       setDisplayPlaylists((prev: boolean) => !prev);
     }
   };
@@ -130,9 +134,9 @@ function Playlists() {
                 }}
               >
                 <Box>
-                  <Button onClick={getPlaylistsHandler}>
+                  {/* <Button onClick={getPlaylistsHandler}>
                     Get my Playlists
-                  </Button>
+                  </Button> */}
                   <ToggleButton
                     value="check"
                     selected={displayPlaylists}
@@ -151,7 +155,7 @@ function Playlists() {
               >
                 {displayPlaylists && (
                   <DisplayPlaylists
-                    playlists={playlists as Playlist[]}
+                    playlists={playlistCtx.userPlaylists as Playlist[]}
                     onAddPlaylist={playlistSavedHandler}
                   />
                 )}

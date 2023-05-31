@@ -15,6 +15,7 @@ import { PlayerContext } from "./context/player-context";
 import Player from "./components/Player";
 import Artists from "./pages/Artists";
 import Podcasts from "./pages/Podcasts";
+import { Playlist } from "./types";
 
 const darkTheme = createTheme({
   palette: {
@@ -35,6 +36,8 @@ function App() {
   const [track, setTrack] = useState<string | null>(null);
 
   const [spotiToken, setSpotiToken] = useState<string | null>(null);
+
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[] | null>(null);
 
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
@@ -105,19 +108,25 @@ function App() {
     };
 
     refreshToken();
-    const interval = setInterval(async () => {
-      console.log("Refresh token!!");
-      //THIS IS RUNNING EVEN IF I HAVENT LOGGED IN
-      //SHOULD ONLY RUN WHEN LOGGED IN
-      // try {
-      //   refreshToken();
-      // } catch (error) {
-      //   console.log(error);
-      // }
-      // }, (expiresIn - 60) * 1000);
-    }, 100000);
 
-    return () => clearInterval(interval);
+    //Run interval to refresh the tokens every 55 minutes
+
+    // const interval = setInterval(async () => {
+    //   console.log("Refresh token!!");
+    //   //THIS IS RUNNING EVEN IF I HAVENT LOGGED IN
+    //   //SHOULD ONLY RUN WHEN LOGGED IN
+    //   // try {
+    //   //   refreshToken();
+    //   // } catch (error) {
+    //   //   console.log(error);
+    //   // }
+    //   // }, (expiresIn - 60) * 1000);
+    // }, 100000);
+
+    // return () => clearInterval(interval);
+  }, []);
+  const setPlaylistsHandler = useCallback((playlists: Playlist[]) => {
+    setUserPlaylists(playlists);
   }, []);
   return (
     <>
@@ -133,6 +142,8 @@ function App() {
       >
         <PlayerContext.Provider
           value={{
+            userPlaylists: userPlaylists,
+            setPlaylists: setPlaylistsHandler,
             onPlay: playHandler,
             onPause: pauseHandler,
           }}
