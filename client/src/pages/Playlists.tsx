@@ -97,24 +97,53 @@ function Playlists() {
     }
   };
   const submitSearchHandler = async (search: string) => {
-    console.log(search);
+    const responseData = await axios(
+      `https://api.spotify.com/v1/search?q=${search}&type=playlist&limit=5&offset=0`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + ctx.spotifyToken,
+        },
+      }
+    );
+
+    console.log(responseData);
   };
   return (
     <>
       <Grid container spacing={2} sx={{ pt: 10, pb: 10 }}>
-        <Typography
-          variant="h6"
-          sx={{ mt: 4, textAlign: "center", width: "100%" }}
+        <Grid
+          container
+          xs={12}
+          md={4}
+          lg={4}
+          direction="column"
+          sx={{ display: "flex" }}
         >
-          Save a playlist and get notified when a song is added!!
-        </Typography>
-        <Grid container sx={{ display: "flex" }}>
           <Grid
             item
-            xs={12}
-            md={6}
-            lg={6}
-            sx={{ backgroundColor: (theme) => theme.palette.grey[900] }}
+            // xs={12}
+            // md={6}
+            // lg={6}
+            // sx={{ backgroundColor: (theme) => theme.palette.grey[900] }}
+          >
+            <Container
+              sx={{
+                mt: 4,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "start",
+                height: 200,
+                width: 300,
+              }}
+            >
+              <SearchBar onSubmit={submitSearchHandler} />
+            </Container>
+          </Grid>
+          <Grid
+            item
+
+            // sx={{ backgroundColor: (theme) => theme.palette.grey[800] }}
           >
             <Box
               sx={{
@@ -142,7 +171,7 @@ function Playlists() {
                     selected={displayPlaylists}
                     onChange={togglePlaylists}
                   >
-                    Toggle Playlists
+                    My followed playlists
                   </ToggleButton>
                 </Box>
               </Box>
@@ -162,27 +191,8 @@ function Playlists() {
               </Box>
             </Box>
           </Grid>
-          <Grid
-            item
-            xs={12}
-            md={6}
-            lg={6}
-            sx={{ backgroundColor: (theme) => theme.palette.grey[900] }}
-          >
-            <Container
-              sx={{
-                mt: 4,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "start",
-                height: 200,
-              }}
-            >
-              <SearchBar onSubmit={submitSearchHandler} />
-            </Container>
-          </Grid>
         </Grid>
-        <Grid item xs={12} md={12} lg={12}>
+        <Grid item xs={12} md={8} lg={8} sx={{}}>
           <Typography variant="h4">Your Saved Playlists</Typography>
           <SavedPlaylists playlists={savedPlaylists ?? []} />
         </Grid>

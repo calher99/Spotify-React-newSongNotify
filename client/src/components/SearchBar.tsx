@@ -37,7 +37,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSubmit }) => {
         display: "flex",
         alignItems: "center",
         borderRadius: 16,
-        width: 400,
+        width: "100%",
         maxHeight: 50,
         backgroundColor: "primary.light",
         "&:hover": {
