@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Divider,
   IconButton,
   ListItem,
   ListItemAvatar,
@@ -14,9 +15,14 @@ import { AuthContext } from "../context/auth-context";
 interface DisplayPlaylistProps {
   playlist: Playlist;
   onAddPlaylist: (newPlaylist: any) => void;
+  isDropdown?: boolean;
 }
 
-function DisplayPlaylist({ playlist, onAddPlaylist }: DisplayPlaylistProps) {
+function DisplayPlaylist({
+  playlist,
+  onAddPlaylist,
+  isDropdown = false,
+}: DisplayPlaylistProps) {
   const ctx = React.useContext(AuthContext);
   const handleSave = async (
     id: string,
@@ -69,13 +75,16 @@ function DisplayPlaylist({ playlist, onAddPlaylist }: DisplayPlaylistProps) {
     onAddPlaylist(responsePost.data.playlist);
   };
   return (
-    <ListItem
-      key={playlist.id}
-      secondaryAction={
-        // https://www.youtube.com/watch?v=KTRFoouGzvY&t=128s&ab_channel=CodeLikePro
-        <IconButton
-          edge="end"
-          aria-label="add"
+    <>
+      {isDropdown && (
+        <ListItem
+          key={playlist.id}
+          sx={{
+            cursor: "pointer",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+            },
+          }}
           onClick={() => {
             handleSave(
               playlist.id,
@@ -85,21 +94,55 @@ function DisplayPlaylist({ playlist, onAddPlaylist }: DisplayPlaylistProps) {
             );
           }}
         >
-          <AddCircleIcon />
-        </IconButton>
-      }
-    >
-      <ListItemAvatar>
-        <Avatar
-          alt={`Avatar ${playlist.name}`}
-          src={
-            playlist.images?.[0]?.url ||
-            "https://as1.ftcdn.net/jpg/03/77/20/86/1024W_F_377208629_UWr3LtC8xJqETdX3tsZ2vV8eRRniaZDv_NW1.jpg"
+          <ListItemAvatar>
+            <Avatar
+              alt={`Avatar ${playlist.name}`}
+              src={
+                playlist.images?.[0]?.url ||
+                "https://as1.ftcdn.net/jpg/03/77/20/86/1024W_F_377208629_UWr3LtC8xJqETdX3tsZ2vV8eRRniaZDv_NW1.jpg"
+              }
+              // For ChatGPT Only if isDropdown=== true
+              sx={{ width: 25, height: 25 }}
+            />
+          </ListItemAvatar>
+          <ListItemText secondary={playlist.name} />
+        </ListItem>
+      )}
+      {!isDropdown && (
+        <ListItem
+          key={playlist.id}
+          secondaryAction={
+            // https://www.youtube.com/watch?v=KTRFoouGzvY&t=128s&ab_channel=CodeLikePro
+            <IconButton
+              edge="end"
+              aria-label="add"
+              onClick={() => {
+                handleSave(
+                  playlist.id,
+                  playlist.images?.[0]?.url,
+                  playlist.name,
+                  playlist.tracks
+                );
+              }}
+            >
+              <AddCircleIcon />
+            </IconButton>
           }
-        />
-      </ListItemAvatar>
-      <ListItemText primary={playlist.name} />
-    </ListItem>
+        >
+          <ListItemAvatar>
+            <Avatar
+              alt={`Avatar ${playlist.name}`}
+              src={
+                playlist.images?.[0]?.url ||
+                "https://as1.ftcdn.net/jpg/03/77/20/86/1024W_F_377208629_UWr3LtC8xJqETdX3tsZ2vV8eRRniaZDv_NW1.jpg"
+              }
+            />
+          </ListItemAvatar>
+          <ListItemText primary={playlist.name} />
+        </ListItem>
+      )}
+      <Divider />
+    </>
   );
 }
 

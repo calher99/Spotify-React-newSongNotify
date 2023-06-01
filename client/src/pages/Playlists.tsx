@@ -6,6 +6,7 @@ import {
   Card,
   CardHeader,
   Typography,
+  ClickAwayListener,
 } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 
@@ -18,6 +19,7 @@ import { Playlist } from "../types";
 import axios from "axios";
 import SavedPlaylists from "../components/SavedPlaylists";
 import { PlayerContext } from "../context/player-context";
+import SearchResults from "../components/SearchResults";
 
 interface PlaylistSaved {
   id: string;
@@ -38,6 +40,8 @@ function Playlists() {
   const [displayPlaylists, setDisplayPlaylists] = useState<boolean>(false);
   const [playlists, setPlaylists] = useState<Playlist[]>();
   const [savedPlaylists, setSavedPlaylists] = useState<PlaylistSaved[]>([]);
+
+  const [searchResults, setSearchResults] = useState<Playlist[]>([]);
 
   useEffect(() => {
     //Load always all the user Spotify Playlists
@@ -107,18 +111,17 @@ function Playlists() {
       }
     );
 
-    console.log(responseData);
+    setSearchResults(responseData.data.playlists.items);
   };
   return (
     <>
-      <Grid container spacing={2} sx={{ pt: 10, pb: 10 }}>
+      <Grid container spacing={15} sx={{ pt: 10, pb: 10 }}>
         <Grid
-          container
+          item
           xs={12}
           md={4}
           lg={4}
-          direction="column"
-          sx={{ display: "flex" }}
+          sx={{ display: "flex", flexDirection: "column" }}
         >
           <Grid
             item
@@ -129,15 +132,26 @@ function Playlists() {
           >
             <Container
               sx={{
-                mt: 4,
+                mt: 3,
                 display: "flex",
                 justifyContent: "center",
+                flexDirection: "column",
                 alignItems: "start",
-                height: 200,
                 width: 300,
               }}
             >
               <SearchBar onSubmit={submitSearchHandler} />
+              <ClickAwayListener onClickAway={() => setSearchResults([])}>
+                <Box>
+                  {searchResults && (
+                    <DisplayPlaylists
+                      playlists={searchResults as Playlist[]}
+                      onAddPlaylist={playlistSavedHandler}
+                      isDropdown={true}
+                    />
+                  )}
+                </Box>
+              </ClickAwayListener>
             </Container>
           </Grid>
           <Grid
@@ -192,7 +206,7 @@ function Playlists() {
             </Box>
           </Grid>
         </Grid>
-        <Grid item xs={12} md={8} lg={8} sx={{}}>
+        <Grid item xs={12} md={8} lg={8} sx={{ mt: 2 }}>
           <Typography variant="h4">Your Saved Playlists</Typography>
           <SavedPlaylists playlists={savedPlaylists ?? []} />
         </Grid>

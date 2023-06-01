@@ -9,9 +9,14 @@ import DisplayPlaylist from "./DisplayPlaylist";
 interface DisplayPlaylistsProps {
   playlists: Playlist[];
   onAddPlaylist: (newPlaylist: any) => void;
+  isDropdown?: boolean;
 }
 
-function DisplayPlaylists({ playlists, onAddPlaylist }: DisplayPlaylistsProps) {
+function DisplayPlaylists({
+  playlists,
+  onAddPlaylist,
+  isDropdown = false,
+}: DisplayPlaylistsProps) {
   return (
     <Box
       sx={{
@@ -29,6 +34,7 @@ function DisplayPlaylists({ playlists, onAddPlaylist }: DisplayPlaylistsProps) {
               playlist={playlist}
               onAddPlaylist={onAddPlaylist}
               key={playlist.id}
+              isDropdown={isDropdown}
             />
           );
         })}
