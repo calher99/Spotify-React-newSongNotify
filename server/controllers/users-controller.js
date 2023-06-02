@@ -54,7 +54,7 @@ const signUp = async (req, res, next) => {
     token = jwt.sign(
       { userId: createdUser.id, email: createdUser.email },
       process.env.TOKEN_STRING,
-      { expiresIn: "1h" }
+      // { expiresIn: "1h" } To implement- refresh the token automatically once we are on the website
     );
   } catch (error) {
     return next(new HttpError("Error with token authentication", 500));
@@ -97,7 +97,7 @@ const logIn = async (req, res, next) => {
     token = jwt.sign(
       { userId: identifiedUser.id, email: identifiedUser.email },
       process.env.TOKEN_STRING,
-      { expiresIn: "1h" }
+      // { expiresIn: "1h" }
     );
   } catch (error) {
     return next(new HttpError("Error with token authentication", 500));

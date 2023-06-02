@@ -110,6 +110,56 @@ const update = async (req, res, next) => {
     .json({ playlist: updatedPlaylist.toObject({ getters: true }) });
 };
 
+const deletePlaylistById = async (req, res, next) => {
+  const playlistId = req.params.playlistId;
+
+  let playlist;
+  try {
+    //populate makes us to get the information of the user also
+    playlist = await Playlist.findById(playlistId).populate("user", "playlists");
+  } catch (error) {
+    new HttpError("Something went wrong,try again please", 500);
+  }
+  if (!playlist) {
+    new HttpError(
+      "Could not retrive the playlist to be removerd, try again please",
+      500
+    );
+  }
+  //We have the id of user because of populate
+  if(playlist.user.id !== req.usedData.userId){
+    return next(
+      new HttpError("You are not allowed to delete this place"),
+      401
+    );
+  }
+  
+  try {
+    //For ChatGPT: We need to delete the playlist and also delete it from the user playlists
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await Playlist.deleteOne({ _id: playlist._id }, { session: sess });
+    await User.updateOne(
+      { _id: playlist.user },
+      { $pull: { playlists: playlist._id } },
+      { session: sess, new: true }
+    );
+    
+    await sess.commitTransaction();
+  } catch (error) {
+    console.log(error);
+    return next(
+      new HttpError("Error while deleting the playlist try again please", 500)
+    );
+  }
+
+  
+  res.status(200); //Convention is 201 when you submit something correctly
+  res.json({ message: "Deleted playlist" });
+};
+
+
+exports.deletePlaylistById = deletePlaylistById;
 exports.add = add;
 exports.getPlaylistsByUserId = getPlaylistsByUserId;
 exports.update = update;

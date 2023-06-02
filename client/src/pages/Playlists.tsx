@@ -95,6 +95,12 @@ function Playlists() {
     });
   };
 
+  const playlistDeletedHandler = (id: string) => {
+    setSavedPlaylists((prev: PlaylistSaved[] | []) => {
+      return prev.filter((playlist) => playlist.id !== id);
+    });
+  };
+
   const togglePlaylists = async () => {
     if (playlistCtx.userPlaylists) {
       setDisplayPlaylists((prev: boolean) => !prev);
@@ -113,6 +119,7 @@ function Playlists() {
 
     setSearchResults(responseData.data.playlists.items);
   };
+
   return (
     <>
       <Grid container spacing={15} sx={{ pt: 10, pb: 10 }}>
@@ -185,7 +192,7 @@ function Playlists() {
                     selected={displayPlaylists}
                     onChange={togglePlaylists}
                   >
-                    My followed playlists
+                    Add from my playlists
                   </ToggleButton>
                 </Box>
               </Box>
@@ -208,7 +215,10 @@ function Playlists() {
         </Grid>
         <Grid item xs={12} md={8} lg={8} sx={{ mt: 2 }}>
           <Typography variant="h4">Your Saved Playlists</Typography>
-          <SavedPlaylists playlists={savedPlaylists ?? []} />
+          <SavedPlaylists
+            playlists={savedPlaylists ?? []}
+            onDelete={playlistDeletedHandler}
+          />
         </Grid>
       </Grid>
     </>

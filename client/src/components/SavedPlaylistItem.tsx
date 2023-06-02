@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import DeleteIcon from "@mui/icons-material/Delete";
 import Fade from "@mui/material/Fade";
 import axios from "axios";
 import { AuthContext } from "../context/auth-context";
@@ -31,7 +32,13 @@ interface PlaylistSaved {
   createdAt: Date;
 }
 
-function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
+function SavedPlaylistItem({
+  playlist,
+  onDelete,
+}: {
+  playlist: PlaylistSaved;
+  onDelete: (id: string) => void;
+}) {
   const ctx = React.useContext(AuthContext);
   const playerCtx = React.useContext(PlayerContext);
 
@@ -89,6 +96,23 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
     month: "2-digit",
     day: "2-digit",
   };
+
+  const deletePlaylistHandler = async () => {
+    //TI Maybe add a modal to confirm that we want to deleete?
+    try {
+      const responseData = await axios({
+        url: `http://localhost:4080/api/playlists/delete/${playlist.id}`,
+        method: "DELETE",
+        headers: {
+          Authorization: "Bearer " + ctx.token,
+        },
+      });
+      //Update the saved playlists
+      onDelete(playlist.id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <ListItem key={playlist.id}>
@@ -128,6 +152,21 @@ function SavedPlaylistItem({ playlist }: { playlist: PlaylistSaved }) {
               </IconButton>
             </Tooltip>
           )}
+
+          <Tooltip
+            placement="right"
+            TransitionComponent={Fade}
+            TransitionProps={{ timeout: 600 }}
+            title="Remove from saved playlists"
+          >
+            <IconButton
+              edge="end"
+              aria-label="comments"
+              onClick={deletePlaylistHandler}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
 
           {showTracks && (
             <Tooltip

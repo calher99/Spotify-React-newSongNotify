@@ -14,6 +14,8 @@ router.post("/add" , playlistsControllers.add)
 
 router.post("/update/:playlistId" , playlistsControllers.update)
 
+router.delete("/delete/:playlistId" , playlistsControllers.deletePlaylistById)
+
 
 
 

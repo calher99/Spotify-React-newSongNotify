@@ -92,6 +92,7 @@ function App() {
   }, [login]);
 
   useEffect(() => {
+    //TI Do I need two useEffects?
     const storedSpotiData = JSON.parse(
       localStorage.getItem("SpotifyUser") as string
     );
@@ -108,23 +109,22 @@ function App() {
     };
 
     refreshToken();
-
-    //Run interval to refresh the tokens every 55 minutes
-
-    // const interval = setInterval(async () => {
-    //   console.log("Refresh token!!");
-    //   //THIS IS RUNNING EVEN IF I HAVENT LOGGED IN
-    //   //SHOULD ONLY RUN WHEN LOGGED IN
-    //   // try {
-    //   //   refreshToken();
-    //   // } catch (error) {
-    //   //   console.log(error);
-    //   // }
-    //   // }, (expiresIn - 60) * 1000);
-    // }, 100000);
-
-    // return () => clearInterval(interval);
-  }, []);
+    let interval: any;
+    if (token) {
+      interval = setInterval(async () => {
+        console.log("Refresh token!!");
+        //THIS IS RUNNING EVEN IF I HAVENT LOGGED IN
+        //SHOULD ONLY RUN WHEN LOGGED IN
+        try {
+          refreshToken();
+        } catch (error) {
+          console.log(error);
+        }
+        // }, (expiresIn - 60) * 1000);
+      }, 50 * 60 * 1000);
+    }
+    return () => clearInterval(interval);
+  }, [token]);
   const setPlaylistsHandler = useCallback((playlists: Playlist[]) => {
     setUserPlaylists(playlists);
   }, []);

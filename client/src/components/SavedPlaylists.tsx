@@ -13,7 +13,13 @@ interface PlaylistSaved {
   createdAt: Date;
 }
 
-function SavedPlaylists({ playlists }: { playlists: PlaylistSaved[] }) {
+function SavedPlaylists({
+  playlists,
+  onDelete,
+}: {
+  playlists: PlaylistSaved[];
+  onDelete: (id: string) => void;
+}) {
   return (
     <Box
       sx={{
@@ -25,7 +31,13 @@ function SavedPlaylists({ playlists }: { playlists: PlaylistSaved[] }) {
     >
       <List component="nav" aria-label="playlist list" sx={{}}>
         {playlists.map((playlist: PlaylistSaved) => {
-          return <SavedPlaylistItem playlist={playlist} key={playlist.id} />;
+          return (
+            <SavedPlaylistItem
+              playlist={playlist}
+              key={playlist.id}
+              onDelete={onDelete}
+            />
+          );
         })}
       </List>
     </Box>
