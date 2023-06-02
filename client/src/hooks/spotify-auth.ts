@@ -1,34 +1,35 @@
 import { useEffect, useState } from "react";
 import { useHttpClient } from "./http-hook";
+import axios from "axios";
 
 export const useSpotifyAuth = (code: string) => {
   const [accessToken, setAccessToken] = useState();
   const [refreshToken, setRefreshToken] = useState();
   const [expiresIn, setExpiresIn] = useState<number>();
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   useEffect(() => {
     const getTokens = async () => {
-      const responseData = await sendRequest(
-        "http://localhost:4080/api/spotify/login",
-        "POST",
-        JSON.stringify({ code: code }),
-        { "Content-Type": "application/json" }
-      );
-      setAccessToken(responseData.spotiAccessToken);
-      setRefreshToken(responseData.spotiRefreshToken);
-      setExpiresIn(responseData.spotiExpiresIn);
-      // setExpiresIn(5);
+      try {
+        const responseData = await axios({
+          url: "http://localhost:4080/api/spotify/login",
+          method: "POST",
+          data: { code: code },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        setAccessToken(responseData.data.spotiAccessToken);
+        setRefreshToken(responseData.data.spotiRefreshToken);
+        setExpiresIn(responseData.data.spotiExpiresIn);
+        // setExpiresIn(5);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    try {
-      getTokens();
-    } catch (error) {
-      console.log(error);
-    }
-
-    // window.history.pushState({}, null, "/");
-  }, [code, sendRequest]);
+    getTokens();
+  }, [code]);
 
   // useEffect(() => {
   //   if (!refreshToken || !expiresIn) return;

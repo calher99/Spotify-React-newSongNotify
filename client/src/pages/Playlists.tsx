@@ -46,41 +46,53 @@ function Playlists() {
   useEffect(() => {
     //Load always all the user Spotify Playlists
     const getPlaylistsHandler = async () => {
-      let offset = 0;
-      let totalPlaylists: Playlist[] = [];
-      while (true) {
-        let responseData = await axios(
-          `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: "Bearer " + ctx.spotifyToken,
-            },
+      try {
+        let offset = 0;
+        let totalPlaylists: Playlist[] = [];
+        while (true) {
+          try {
+            let responseData = await axios(
+              `https://api.spotify.com/v1/me/playlists?limit=50&offset=${offset}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: "Bearer " + ctx.spotifyToken,
+                },
+              }
+            );
+            if (responseData.data.items && responseData.data.items.length > 0) {
+              totalPlaylists = totalPlaylists.concat(responseData.data.items);
+              offset += 50; // prepare for the next iteration
+            } else {
+              break; // no more playlists, stop the loop
+            }
+          } catch (error) {
+            console.log(error);
           }
-        );
-        if (responseData.data.items.length > 0) {
-          totalPlaylists = totalPlaylists.concat(responseData.data.items);
-          offset += 50; // prepare for the next iteration
-        } else {
-          break; // no more playlists, stop the loop
         }
+        //Set ctx
+        playlistCtx.setPlaylists(totalPlaylists);
+        //Old code
+        // setPlaylists(totalPlaylists);
+        setDisplayPlaylists(true);
+      } catch (error) {
+        console.error("Error in getPlaylistsHandler: ", error);
       }
-      //Set ctx
-      playlistCtx.setPlaylists(totalPlaylists);
-      //Old code
-      // setPlaylists(totalPlaylists);
-      setDisplayPlaylists(true);
     };
 
     // Get saved playlists for the user
     const getUserPlaylists = async () => {
-      const responseData = await axios(
-        `http://localhost:4080/api/playlists/${ctx.userId}`,
-        {
-          method: "GET",
-        }
-      );
-      setSavedPlaylists(responseData.data.playlists);
+      try {
+        const responseData = await axios(
+          `http://localhost:4080/api/playlists/${ctx.userId}`,
+          {
+            method: "GET",
+          }
+        );
+        setSavedPlaylists(responseData.data.playlists);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     if (ctx.spotifyToken) {
@@ -107,17 +119,21 @@ function Playlists() {
     }
   };
   const submitSearchHandler = async (search: string) => {
-    const responseData = await axios(
-      `https://api.spotify.com/v1/search?q=${search}&type=playlist&limit=5&offset=0`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + ctx.spotifyToken,
-        },
-      }
-    );
+    try {
+      const responseData = await axios(
+        `https://api.spotify.com/v1/search?q=${search}&type=playlist&limit=5&offset=0`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + ctx.spotifyToken,
+          },
+        }
+      );
 
-    setSearchResults(responseData.data.playlists.items);
+      setSearchResults(responseData.data.playlists.items);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

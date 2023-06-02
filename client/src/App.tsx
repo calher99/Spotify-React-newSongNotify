@@ -16,6 +16,7 @@ import Player from "./components/Player";
 import Artists from "./pages/Artists";
 import Podcasts from "./pages/Podcasts";
 import { Playlist } from "./types";
+import axios from "axios";
 
 const darkTheme = createTheme({
   palette: {
@@ -98,14 +99,20 @@ function App() {
     );
     // if (!refreshToken || !expiresIn) return;
     const refreshToken = async () => {
-      const responseData = await sendRequest(
-        "http://localhost:4080/api/spotify/refresh",
-        "POST",
-        JSON.stringify({ refreshToken: storedSpotiData.refreshSpoti }),
-        { "Content-Type": "application/json" }
-      );
+      try {
+        const responseData = await axios({
+          url: "http://localhost:4080/api/spotify/refresh",
+          method: "POST",
+          data: { refreshToken: storedSpotiData.refreshSpoti },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      setSpotiToken(responseData.spotiAccessToken);
+        setSpotiToken(responseData.data.spotiAccessToken);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     refreshToken();

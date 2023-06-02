@@ -31,25 +31,34 @@ function DisplayPlaylist({
     tracks: PlaylistTrack[]
   ) => {
     //1. Get the tracks
-    let offset = 0;
     let totalTracks: Track[] = [];
+    try {
+      let offset = 0;
 
-    while (true) {
-      let responseData = await axios(
-        `https://api.spotify.com/v1/playlists/${id}/tracks?limit=50&offset=${offset}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + ctx.spotifyToken,
-          },
+      while (true) {
+        try {
+          let responseData = await axios(
+            `https://api.spotify.com/v1/playlists/${id}/tracks?limit=50&offset=${offset}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: "Bearer " + ctx.spotifyToken,
+              },
+            }
+          );
+          if (responseData.data.items && responseData.data.items.length > 0) {
+            totalTracks = totalTracks.concat(responseData.data.items);
+            offset += 50; // prepare for the next iteration
+          } else {
+            break; // no more playlists, stop the loop
+          }
+        } catch (error) {
+          console.log(error);
         }
-      );
-      if (responseData.data.items.length > 0) {
-        totalTracks = totalTracks.concat(responseData.data.items);
-        offset += 50; // prepare for the next iteration
-      } else {
-        break; // no more playlists, stop the loop
       }
+    } catch (error) {
+      console.log("Logical Error: ", error);
+      // Handle the logical error
     }
 
     const trackIds = totalTracks.map((item: any) => item.track.id);
@@ -62,17 +71,21 @@ function DisplayPlaylist({
     };
 
     //2.send it to the db
-    const responsePost = await axios({
-      url: "http://localhost:4080/api/playlists/add",
-      method: "POST",
-      data: playlistObject,
-      headers: {
-        Authorization: "Bearer " + ctx.token,
-      },
-    });
+    try {
+      const responsePost = await axios({
+        url: "http://localhost:4080/api/playlists/add",
+        method: "POST",
+        data: playlistObject,
+        headers: {
+          Authorization: "Bearer " + ctx.token,
+        },
+      });
 
-    //3.Update the parent state with the new saved playlist
-    onAddPlaylist(responsePost.data.playlist);
+      //3.Update the parent state with the new saved playlist
+      onAddPlaylist(responsePost.data.playlist);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <>

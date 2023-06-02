@@ -46,50 +46,63 @@ function SavedPlaylistItem({
   const [showTracks, setShowTracks] = useState<boolean>(false);
 
   const refreshPlaylistHandler = async (playlist: PlaylistSaved) => {
-    //Get the current track on playlist
-    const responseDataPlaylist = await axios(
-      `https://api.spotify.com/v1/playlists/${playlist.spotifyId}/tracks?limit=50`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + ctx.spotifyToken,
-        },
+    try {
+      //Get the current track on playlist
+      const responseDataPlaylist = await axios(
+        `https://api.spotify.com/v1/playlists/${playlist.spotifyId}/tracks?limit=50`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + ctx.spotifyToken,
+          },
+        }
+      );
+
+      //extract the new songs
+      const extractedNewTrack = responseDataPlaylist.data.items.filter(
+        (item: any) => !playlist.songs.includes(item.track.id)
+      );
+      setNewTracks(extractedNewTrack.map((track: any) => track.track));
+
+      //Show the new songs beneath
+      if (newTracks) {
+        setShowTracks(true);
+      } else {
+        //Shoudl show a modal or something
+        console.log("nothing new since the last time!");
       }
-    );
-    //extract the new songs
-    const extractedNewTrack = responseDataPlaylist.data.items.filter(
-      (item: any) => !playlist.songs.includes(item.track.id)
-    );
-    setNewTracks(extractedNewTrack.map((track: any) => track.track));
-    //Show the new songs beneatch
-    if (newTracks) {
-      setShowTracks(true);
-    } else {
-      //Shoudl show a modal or something
-      console.log("nothing new since the last time!");
+    } catch (error) {
+      console.log(error);
     }
   };
+
   const closeHandler = () => {
     setShowTracks(false);
     playerCtx.onPause();
   };
 
   const updateDbHandler = async () => {
-    //API call for updating the playlist tracks
-    const songsToAdd = newTracks.map((track) => track.id);
-    const responseData = await axios({
-      url: `http://localhost:4080/api/playlists/update/${playlist.id}`,
-      method: "POST",
-      data: songsToAdd,
-      headers: {
-        Authorization: "Bearer " + ctx.token,
-      },
-    });
-    //TI: when refreshed until we dont log out the new tracks continue to appear
-    // console.log(responseData);
-    setNewTracks([]);
-    closeHandler();
+    try {
+      //API call for updating the playlist tracks
+      const songsToAdd = newTracks.map((track) => track.id);
+      const responseData = await axios({
+        url: `http://localhost:4080/api/playlists/update/${playlist.id}`,
+        method: "POST",
+        data: songsToAdd,
+        headers: {
+          Authorization: "Bearer " + ctx.token,
+        },
+      });
+
+      //TI: when refreshed until we dont log out the new tracks continue to appear
+      // console.log(responseData);
+      setNewTracks([]);
+      closeHandler();
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   const updated = new Date(playlist.updatedAt);
   const options: Intl.DateTimeFormatOptions = {
     year: "2-digit",
