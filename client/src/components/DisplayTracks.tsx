@@ -11,12 +11,19 @@ function DisplayTracks({
   tracks: Track[];
   onClose: () => void;
 }) {
+  const trackUris = tracks.map((track) => track.uri);
   return (
     <Box sx={{ width: "400px" }}>
       <List component="nav" aria-label="tracks list">
-        {tracks.map((track: Track) => {
+        {tracks.map((track: Track, index: number) => {
           return (
-            <DisplayTrack track={track} onClose={onClose} key={track.id} />
+            <DisplayTrack
+              track={track}
+              trackUris={trackUris}
+              currentIndex={index}
+              onClose={onClose}
+              key={track.id}
+            />
           );
         })}
       </List>

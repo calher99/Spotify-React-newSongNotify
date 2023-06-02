@@ -4,13 +4,19 @@ import SpotifyPlayer from "react-spotify-web-playback";
 
 interface PlayerProps {
   accessToken: string;
-  trackUri: string;
+  trackUris: string[];
+  offset: number;
 }
 
-function Player({ accessToken, trackUri }: PlayerProps) {
+function Player({ accessToken, trackUris, offset }: PlayerProps) {
   const [play, setPlay] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  useEffect(() => setPlay(true), [trackUri]);
+  useEffect(() => {
+    if (isReady) {
+      setPlay(true);
+    }
+  }, [trackUris, isReady]);
 
   if (!accessToken) return null;
   return (
@@ -20,9 +26,13 @@ function Player({ accessToken, trackUri }: PlayerProps) {
         showSaveIcon
         callback={(state: any) => {
           if (!state.isPlaying) setPlay(false);
+          if (state.type === "ready") setIsReady(true);
+          if (state.type === "not_ready") setIsReady(false);
+          if (state.status === "ERROR") console.log(state);
         }}
+        offset={offset}
         play={play}
-        uris={trackUri ? [trackUri] : []}
+        uris={trackUris ? trackUris : []}
       />
     </Box>
   );

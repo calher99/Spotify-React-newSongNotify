@@ -34,17 +34,17 @@ function App() {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [track, setTrack] = useState<string | null>(null);
+  const [tracks, setTracks] = useState<string[] | null>(null);
+  const [indexToPlay, setIndexToPlay] = useState<number | null>(null);
 
   const [spotiToken, setSpotiToken] = useState<string | null>(null);
 
   const [userPlaylists, setUserPlaylists] = useState<Playlist[] | null>(null);
 
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
-
-  const playHandler = useCallback((uri: string) => {
+  const playHandler = useCallback((uris: string[], index: number) => {
     setIsPlaying(true);
-    setTrack(uri);
+    setTracks(uris);
+    setIndexToPlay(index);
   }, []);
   const pauseHandler = useCallback(() => {
     setIsPlaying(false);
@@ -175,7 +175,8 @@ function App() {
               {isPlaying && (
                 <Player
                   accessToken={spotiToken as string}
-                  trackUri={track as string}
+                  trackUris={tracks as string[]}
+                  offset={indexToPlay as number}
                 />
               )}
             </BrowserRouter>

@@ -18,9 +18,13 @@ import axios from "axios";
 
 function DisplayTrack({
   track,
+  trackUris,
+  currentIndex,
   onClose,
 }: {
   track: Track;
+  trackUris: string[];
+  currentIndex: number;
   onClose: () => void;
 }) {
   const userCtx = React.useContext(AuthContext);
@@ -33,6 +37,7 @@ function DisplayTrack({
   useEffect(() => {
     const modifiablePlaylists =
       playlistCtx?.userPlaylists?.filter(
+        // TO BE MODIFIED
         (playlist) => playlist.owner.id === "charli_99"
       ) || [];
     setPlaylistNames(
@@ -41,13 +46,11 @@ function DisplayTrack({
       })
     );
   }, [playlistCtx?.userPlaylists]);
-  const playHandler = (uri: string) => {
-    playlistCtx.onPlay(uri);
+  const playHandler = () => {
+    playlistCtx.onPlay(trackUris, currentIndex);
   };
 
   const addHandler = async (option: string) => {
-    console.log("Playlist ID", option);
-    console.log(track.id);
     //Add the track to the selected playlist Id
     const url = `https://api.spotify.com/v1/playlists/${option}/tracks`;
 
@@ -83,7 +86,7 @@ function DisplayTrack({
       <IconButton
         sx={{ ml: 1.5, mr: 1.5 }}
         onClick={() => {
-          playHandler(track.uri);
+          playHandler();
         }}
       >
         <PlayArrowIcon />

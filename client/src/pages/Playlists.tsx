@@ -35,7 +35,6 @@ interface PlaylistSaved {
 function Playlists() {
   const ctx = React.useContext(AuthContext);
   const playlistCtx = React.useContext(PlayerContext);
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [userId, setUserId] = useState<string>("");
   const [displayPlaylists, setDisplayPlaylists] = useState<boolean>(false);
   const [playlists, setPlaylists] = useState<Playlist[]>();
