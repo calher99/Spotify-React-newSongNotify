@@ -38,14 +38,14 @@ function DisplayTrack({
     const modifiablePlaylists =
       playlistCtx?.userPlaylists?.filter(
         // TO BE MODIFIED
-        (playlist) => playlist.owner.id === "charli_99"
+        (playlist) => playlist.owner.id === userCtx.spotifyUser
       ) || [];
     setPlaylistNames(
       modifiablePlaylists.map((playlist) => {
         return { name: playlist.name, id: playlist.id };
       })
     );
-  }, [playlistCtx?.userPlaylists]);
+  }, [playlistCtx?.userPlaylists, userCtx.spotifyUser]);
   const playHandler = () => {
     playlistCtx.onPlay(trackUris, currentIndex);
   };

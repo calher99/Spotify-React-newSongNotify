@@ -38,6 +38,7 @@ function App() {
   const [indexToPlay, setIndexToPlay] = useState<number | null>(null);
 
   const [spotiToken, setSpotiToken] = useState<string | null>(null);
+  const [spotifyUserId, setSpotifyUserId] = useState<string | null>(null);
 
   const [userPlaylists, setUserPlaylists] = useState<Playlist[] | null>(null);
 
@@ -46,16 +47,20 @@ function App() {
     setTracks(uris);
     setIndexToPlay(index);
   }, []);
+
   const pauseHandler = useCallback(() => {
     setIsPlaying(false);
   }, []);
+
   const loginSpoti = useCallback(
-    (refreshToken: string, accessToken: string) => {
+    (refreshToken: string, accessToken: string, id: string) => {
+      setSpotifyUserId(id);
       localStorage.setItem(
         "SpotifyUser",
         JSON.stringify({
           tokenSpoty: accessToken,
           refreshSpoti: refreshToken,
+          userIdSpoti: id,
         })
       );
     },
@@ -120,8 +125,6 @@ function App() {
     if (token) {
       interval = setInterval(async () => {
         console.log("Refresh token!!");
-        //THIS IS RUNNING EVEN IF I HAVENT LOGGED IN
-        //SHOULD ONLY RUN WHEN LOGGED IN
         try {
           refreshToken();
         } catch (error) {
@@ -139,6 +142,7 @@ function App() {
     <>
       <AuthContext.Provider
         value={{
+          spotifyUser: spotifyUserId,
           userId: userId,
           token: token,
           spotifyToken: spotiToken,
