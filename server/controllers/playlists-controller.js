@@ -90,9 +90,8 @@ const update = async (req, res, next) => {
       new HttpError("You are not allowed to edit this playlist", 500)
     );
   }
-
   //Create new song array
-  updatedPlaylist.songs = updatedPlaylist.songs.concat(req.body);
+  updatedPlaylist.songs = req.body;
 
   try {
     await updatedPlaylist.save();

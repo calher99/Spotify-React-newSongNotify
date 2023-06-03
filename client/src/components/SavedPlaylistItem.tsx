@@ -2,12 +2,10 @@ import {
   Avatar,
   Box,
   IconButton,
-  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
@@ -82,25 +80,50 @@ function SavedPlaylistItem({
   };
 
   const updateDbHandler = async () => {
-    try {
-      //API call for updating the playlist tracks
-      const songsToAdd = newTracks.map((track) => track.id);
-      const responseData = await axios({
-        url: `http://localhost:4080/api/playlists/update/${playlist.id}`,
-        method: "POST",
-        data: songsToAdd,
-        headers: {
-          Authorization: "Bearer " + ctx.token,
-        },
-      });
+    if (newTracks.length !== 0) {
+      try {
+        //API call for updating the playlist tracks
+        let offset = 0;
+        let totalTracks: Track[] = [];
+        while (true) {
+          try {
+            let responseData = await axios(
+              `https://api.spotify.com/v1/playlists/${playlist.spotifyId}/tracks?limit=50&offset=${offset}`,
+              {
+                method: "GET",
+                headers: {
+                  Authorization: "Bearer " + ctx.spotifyToken,
+                },
+              }
+            );
+            if (responseData.data.items && responseData.data.items.length > 0) {
+              totalTracks = totalTracks.concat(responseData.data.items);
+              offset += 50; // prepare for the next iteration
+            } else {
+              break; // no more playlists, stop the loop
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        const trackIds = totalTracks.map((item: any) => item.track.id);
+        await axios({
+          url: `http://localhost:4080/api/playlists/update/${playlist.id}`,
+          method: "POST",
+          data: trackIds,
+          headers: {
+            Authorization: "Bearer " + ctx.token,
+          },
+        });
 
-      //TI: when refreshed until we dont log out the new tracks continue to appear
-      // console.log(responseData);
-      setNewTracks([]);
-      closeHandler();
-    } catch (error) {
-      console.log(error);
+        //TI: when refreshed until we dont log out the new tracks continue to appear
+        // console.log(responseData);
+        setNewTracks([]);
+      } catch (error) {
+        console.log(error);
+      }
     }
+    closeHandler();
   };
 
   const updated = new Date(playlist.updatedAt);
