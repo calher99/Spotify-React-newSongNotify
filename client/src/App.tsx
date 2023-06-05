@@ -36,6 +36,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [tracks, setTracks] = useState<string[] | null>(null);
   const [indexToPlay, setIndexToPlay] = useState<number | null>(null);
+  const [currentTrackId, setCurrentTrackId] = useState<string | null>(null);
 
   const [spotiToken, setSpotiToken] = useState<string | null>(null);
   const [spotifyUserId, setSpotifyUserId] = useState<string | null>(null);
@@ -48,7 +49,7 @@ function App() {
     setIndexToPlay(index);
   }, []);
 
-  const pauseHandler = useCallback(() => {
+  const closePlayerHandler = useCallback(() => {
     setIsPlaying(false);
   }, []);
 
@@ -154,9 +155,11 @@ function App() {
         <PlayerContext.Provider
           value={{
             userPlaylists: userPlaylists,
+            trackPlaying: currentTrackId,
+            setTrackPlaying: setCurrentTrackId,
             setPlaylists: setPlaylistsHandler,
             onPlay: playHandler,
-            onPause: pauseHandler,
+            onClosePlayer: closePlayerHandler,
           }}
         >
           <ThemeProvider theme={darkTheme}>

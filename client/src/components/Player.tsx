@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import SpotifyPlayer from "react-spotify-web-playback";
+import { PlayerContext } from "../context/player-context";
 
 interface PlayerProps {
   accessToken: string;
@@ -10,13 +11,12 @@ interface PlayerProps {
 
 function Player({ accessToken, trackUris, offset }: PlayerProps) {
   const [play, setPlay] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  // const [isReady, setIsReady] = useState(false);
+  const playerCtx = React.useContext(PlayerContext);
 
   useEffect(() => {
-    if (isReady) {
-      setPlay(true);
-    }
-  }, [trackUris, isReady]);
+    setPlay(true);
+  }, [trackUris]);
 
   if (!accessToken) return null;
   return (
@@ -25,14 +25,18 @@ function Player({ accessToken, trackUris, offset }: PlayerProps) {
         token={accessToken}
         showSaveIcon
         callback={(state: any) => {
-          if (!state.isPlaying) setPlay(false);
-          if (state.type === "ready") setIsReady(true);
-          if (state.type === "not_ready") setIsReady(false);
-          if (state.status === "ERROR") console.log(state);
+          // if (!state.isPlaying) {
+          //   console.log("Change to pause the play button in DisplayTrack");
+          // }
+
+          if (state.track?.uri) {
+            playerCtx.setTrackPlaying(state.track.id);
+          }
         }}
         offset={offset}
         play={play}
-        uris={trackUris ? trackUris : []}
+        // uris={trackUris ? trackUris : []}
+        uris={trackUris}
       />
     </Box>
   );

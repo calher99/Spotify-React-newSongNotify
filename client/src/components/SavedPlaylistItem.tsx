@@ -33,9 +33,11 @@ interface PlaylistSaved {
 function SavedPlaylistItem({
   playlist,
   onDelete,
+  onUpdate,
 }: {
   playlist: PlaylistSaved;
   onDelete: (id: string) => void;
+  onUpdate: (playlistId: string, songs: string[]) => void;
 }) {
   const ctx = React.useContext(AuthContext);
   const playerCtx = React.useContext(PlayerContext);
@@ -76,7 +78,7 @@ function SavedPlaylistItem({
 
   const closeHandler = () => {
     setShowTracks(false);
-    playerCtx.onPause();
+    playerCtx.onClosePlayer();
   };
 
   const updateDbHandler = async () => {
@@ -115,7 +117,8 @@ function SavedPlaylistItem({
             Authorization: "Bearer " + ctx.token,
           },
         });
-
+        //Update playlist state
+        onUpdate(playlist.id, trackIds);
         //TI: when refreshed until we dont log out the new tracks continue to appear
         // console.log(responseData);
         setNewTracks([]);

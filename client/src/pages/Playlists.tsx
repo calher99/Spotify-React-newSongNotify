@@ -112,6 +112,16 @@ function Playlists() {
     });
   };
 
+  const playlistUpdateHandler = (playlistId: string, songs: string[]) => {
+    setSavedPlaylists((prev: PlaylistSaved[] | []) => {
+      return prev.map((playlist) =>
+        playlist.id === playlistId
+          ? { ...playlist, songs: [...playlist.songs, ...songs] }
+          : playlist
+      );
+    });
+  };
+
   const togglePlaylists = async () => {
     if (playlistCtx.userPlaylists) {
       setDisplayPlaylists((prev: boolean) => !prev);
@@ -233,6 +243,7 @@ function Playlists() {
           <SavedPlaylists
             playlists={savedPlaylists ?? []}
             onDelete={playlistDeletedHandler}
+            onUpdate={playlistUpdateHandler}
           />
         </Grid>
       </Grid>

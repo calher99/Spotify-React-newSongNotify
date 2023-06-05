@@ -16,9 +16,11 @@ interface PlaylistSaved {
 function SavedPlaylists({
   playlists,
   onDelete,
+  onUpdate,
 }: {
   playlists: PlaylistSaved[];
   onDelete: (id: string) => void;
+  onUpdate: (playlistId: string, songs: string[]) => void;
 }) {
   return (
     <Box
@@ -36,6 +38,7 @@ function SavedPlaylists({
               playlist={playlist}
               key={playlist.id}
               onDelete={onDelete}
+              onUpdate={onUpdate}
             />
           );
         })}

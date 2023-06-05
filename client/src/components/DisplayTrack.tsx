@@ -46,6 +46,7 @@ function DisplayTrack({
       })
     );
   }, [playlistCtx?.userPlaylists, userCtx.spotifyUser]);
+
   const playHandler = () => {
     playlistCtx.onPlay(trackUris, currentIndex);
   };
@@ -74,6 +75,8 @@ function DisplayTrack({
       console.log("Error adding track to playlist:", error);
     }
   };
+  const playingColor = playlistCtx.trackPlaying === track.id ? "#1DB954" : "";
+
   return (
     <ListItem
       key={track.id}
@@ -81,10 +84,11 @@ function DisplayTrack({
         "&:hover": {
           backgroundColor: "rgba(255, 255, 255, 0.1)", // Change this value to suit your theme
         },
+        color: playingColor,
       }}
     >
       <IconButton
-        sx={{ ml: 1.5, mr: 1.5 }}
+        sx={{ ml: 1.5, mr: 1.5, color: playingColor }}
         onClick={() => {
           playHandler();
         }}
