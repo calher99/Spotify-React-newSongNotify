@@ -1,23 +1,27 @@
 import {
   Avatar,
+  Badge,
   Box,
+  Collapse,
   IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Tooltip,
 } from "@mui/material";
-import CachedIcon from "@mui/icons-material/Cached";
+
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Fade from "@mui/material/Fade";
 import axios from "axios";
 import { AuthContext } from "../context/auth-context";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Track } from "../types";
 import DisplayTracks from "./DisplayTracks";
 import CloseIcon from "@mui/icons-material/Close";
 import { PlayerContext } from "../context/player-context";
+import MenuButtons from "./MenuButtons";
 
 interface PlaylistSaved {
   id: string;
@@ -65,12 +69,12 @@ function SavedPlaylistItem({
       setNewTracks(extractedNewTrack.map((track: any) => track.track));
 
       //Show the new songs beneath
-      if (newTracks) {
-        setShowTracks(true);
-      } else {
-        //Shoudl show a modal or something
-        console.log("nothing new since the last time!");
-      }
+      // if (newTracks.length > 0) {
+      //   setShowTracks(true);
+      // } else {
+      //   //Shoudl show a modal or something
+      //   console.log("nothing new since the last time!");
+      // }
     } catch (error) {
       console.log(error);
     }
@@ -139,7 +143,7 @@ function SavedPlaylistItem({
   const deletePlaylistHandler = async () => {
     //TI Maybe add a modal to confirm that we want to deleete?
     try {
-      const responseData = await axios({
+      await axios({
         url: `http://localhost:4080/api/playlists/delete/${playlist.id}`,
         method: "DELETE",
         headers: {
@@ -152,6 +156,10 @@ function SavedPlaylistItem({
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    refreshPlaylistHandler(playlist);
+  }, [playlist]);
   return (
     <>
       <ListItem key={playlist.id}>
@@ -175,43 +183,46 @@ function SavedPlaylistItem({
         <Box sx={{ width: "100px", display: "flex", gap: 2 }}>
           {!showTracks && (
             <Tooltip
-              placement="right"
+              placement="top"
               TransitionComponent={Fade}
               TransitionProps={{ timeout: 600 }}
-              title="Check for new songs"
+              title="Show"
             >
-              <IconButton
-                edge="end"
-                aria-label="comments"
-                onClick={() => {
-                  refreshPlaylistHandler(playlist);
-                }}
-              >
-                <CachedIcon />
-              </IconButton>
+              <Badge badgeContent={newTracks.length} color="primary">
+                <IconButton
+                  edge="end"
+                  aria-label="comments"
+                  onClick={() => {
+                    if (newTracks.length > 0) {
+                      setShowTracks(true);
+                    }
+
+                    // refreshPlaylistHandler(playlist);
+                  }}
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </Badge>
             </Tooltip>
           )}
-
-          <Tooltip
-            placement="right"
-            TransitionComponent={Fade}
-            TransitionProps={{ timeout: 600 }}
-            title="Remove from saved playlists"
-          >
-            <IconButton
-              edge="end"
-              aria-label="comments"
-              onClick={deletePlaylistHandler}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-
           {showTracks && (
             <Tooltip
               TransitionComponent={Fade}
               TransitionProps={{ timeout: 600 }}
-              title="Mark tracks as checked"
+              title="Hide"
+              placement="top"
+            >
+              <IconButton onClick={closeHandler}>
+                <ExpandLessIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {showTracks && (
+            <Tooltip
+              TransitionComponent={Fade}
+              TransitionProps={{ timeout: 600 }}
+              title="Songs checked"
+              placement="top"
             >
               <IconButton onClick={updateDbHandler}>
                 <DoneAllIcon />
@@ -219,22 +230,18 @@ function SavedPlaylistItem({
             </Tooltip>
           )}
 
-          {showTracks && (
-            <Tooltip
-              TransitionComponent={Fade}
-              TransitionProps={{ timeout: 600 }}
-              title="Close"
-            >
-              <IconButton onClick={closeHandler}>
-                <CloseIcon></CloseIcon>
-              </IconButton>
-            </Tooltip>
-          )}
+          <MenuButtons
+            onDelete={deletePlaylistHandler}
+            onRefresh={() => refreshPlaylistHandler(playlist)}
+          />
         </Box>
       </ListItem>
-      {showTracks && (
+      <Collapse in={showTracks} timeout={500}>
         <DisplayTracks tracks={newTracks as Track[]} onClose={closeHandler} />
-      )}
+      </Collapse>
+      {/* {showTracks && (
+        <DisplayTracks tracks={newTracks as Track[]} onClose={closeHandler} />
+      )} */}
     </>
   );
 }

@@ -7,10 +7,9 @@ import {
   ListItemText,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import React from "react";
-import { Playlist, PlaylistTrack, Track } from "../types";
-import axios from "axios";
-import { AuthContext } from "../context/auth-context";
+
+import { Playlist } from "../types";
+
 import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
 
 interface DisplayPlaylistProps {
