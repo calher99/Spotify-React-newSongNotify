@@ -20,6 +20,7 @@ import axios from "axios";
 import SavedPlaylists from "../components/SavedPlaylists";
 import { PlayerContext } from "../context/player-context";
 import SearchResults from "../components/SearchResults";
+import SearchAutocomplete from "../components/SearchAutocomplete";
 
 interface PlaylistSaved {
   id: string;
@@ -73,7 +74,7 @@ function Playlists() {
         playlistCtx.setPlaylists(totalPlaylists);
         //Old code
         // setPlaylists(totalPlaylists);
-        setDisplayPlaylists(true);
+        // setDisplayPlaylists(true);
       } catch (error) {
         console.error("Error in getPlaylistsHandler: ", error);
       }
@@ -122,26 +123,30 @@ function Playlists() {
     });
   };
 
-  const togglePlaylists = async () => {
-    if (playlistCtx.userPlaylists) {
-      setDisplayPlaylists((prev: boolean) => !prev);
-    }
-  };
-  const submitSearchHandler = async (search: string) => {
-    try {
-      const responseData = await axios(
-        `https://api.spotify.com/v1/search?q=${search}&type=playlist&limit=5&offset=0`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + ctx.spotifyToken,
-          },
-        }
-      );
+  // const togglePlaylists = async () => {
+  //   if (playlistCtx.userPlaylists) {
+  //     setDisplayPlaylists((prev: boolean) => !prev);
+  //   }
+  // };
+  const submitSearchHandler = async (search: string, myPlaylist?: Playlist) => {
+    if (myPlaylist) {
+      console.log(myPlaylist);
+    } else {
+      try {
+        const responseData = await axios(
+          `https://api.spotify.com/v1/search?q=${search}&type=playlist&limit=5&offset=0`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Bearer " + ctx.spotifyToken,
+            },
+          }
+        );
 
-      setSearchResults(responseData.data.playlists.items);
-    } catch (error) {
-      console.log(error);
+        setSearchResults(responseData.data.playlists.items);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -172,7 +177,11 @@ function Playlists() {
                 width: 300,
               }}
             >
-              <SearchBar onSubmit={submitSearchHandler} />
+              <SearchAutocomplete
+                onSubmit={submitSearchHandler}
+                options={(playlistCtx.userPlaylists as Playlist[]) || []}
+              />
+              {/* <SearchBar onSubmit={submitSearchHandler} /> */}
               <ClickAwayListener onClickAway={() => setSearchResults([])}>
                 <Box>
                   {searchResults && (
@@ -186,7 +195,7 @@ function Playlists() {
               </ClickAwayListener>
             </Container>
           </Grid>
-          <Grid
+          {/* <Grid
             item
 
             // sx={{ backgroundColor: (theme) => theme.palette.grey[800] }}
@@ -209,9 +218,7 @@ function Playlists() {
                 }}
               >
                 <Box>
-                  {/* <Button onClick={getPlaylistsHandler}>
-                    Get my Playlists
-                  </Button> */}
+        
                   <ToggleButton
                     value="check"
                     selected={displayPlaylists}
@@ -236,7 +243,7 @@ function Playlists() {
                 )}
               </Box>
             </Box>
-          </Grid>
+          </Grid> */}
         </Grid>
         <Grid item xs={12} md={8} lg={8} sx={{ mt: 2 }}>
           <Typography variant="h4">Your Saved Playlists</Typography>
