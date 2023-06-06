@@ -21,6 +21,7 @@ import SavedPlaylists from "../components/SavedPlaylists";
 import { PlayerContext } from "../context/player-context";
 import SearchResults from "../components/SearchResults";
 import SearchAutocomplete from "../components/SearchAutocomplete";
+import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
 
 interface PlaylistSaved {
   id: string;
@@ -122,7 +123,7 @@ function Playlists() {
 
   const submitSearchHandler = async (search: string, myPlaylist?: Playlist) => {
     if (myPlaylist) {
-      console.log(myPlaylist);
+      return;
     } else {
       try {
         const responseData = await axios(
@@ -166,6 +167,7 @@ function Playlists() {
               <SearchAutocomplete
                 onSubmit={submitSearchHandler}
                 options={(playlistCtx.userPlaylists as Playlist[]) || []}
+                onAddPlaylist={playlistSavedHandler}
               />
               <ClickAwayListener onClickAway={() => setSearchResults([])}>
                 <Box>

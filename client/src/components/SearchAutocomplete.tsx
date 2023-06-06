@@ -10,17 +10,21 @@ import {
   TextField,
 } from "@mui/material";
 import { Playlist } from "../types";
+import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
 
 // Add the type for your new onSubmit prop
 type SearchBarProps = {
   options?: Playlist[];
   onSubmit: (value: string, myPlaylist?: Playlist) => void;
+  onAddPlaylist: (newPlaylist: any) => void;
 };
 
 const SearchAutocomplete: React.FC<SearchBarProps> = ({
   options,
   onSubmit,
+  onAddPlaylist,
 }) => {
+  const handleSave = useHandleSavePlaylist();
   const [inputValue, setInputValue] = React.useState("");
   const [selectedOption, setSelectedOption] = React.useState<Playlist | null>(
     null
@@ -39,15 +43,25 @@ const SearchAutocomplete: React.FC<SearchBarProps> = ({
     playlistSelected: Playlist | string | null
   ) => {
     if (playlistSelected && typeof playlistSelected !== "string") {
+      //Submit the option selected
       const foundOption = options?.find(
         (option) => option.id === playlistSelected.id
       );
-      setSelectedOption(foundOption || null);
+      handleSave(
+        playlistSelected.id,
+        playlistSelected.images?.[0]?.url,
+        playlistSelected.name,
+        onAddPlaylist
+      );
+
+      //For ChatGPT why is this not working? I want to clear the inputs once I click one of the options
+      setSelectedOption(null);
+      setInputValue("");
     }
   };
 
-  const handleFormSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleFormSubmit = (event?: React.FormEvent) => {
+    event?.preventDefault();
 
     // Here you can check if an option was selected
     if (selectedOption) {
@@ -72,6 +86,7 @@ const SearchAutocomplete: React.FC<SearchBarProps> = ({
           typeof option === "string" ? option : option.name
         }
         inputValue={inputValue}
+        value={selectedOption} // control the value
         onInputChange={handleInputChange}
         onChange={handleOptionChange}
         renderInput={(params) => (

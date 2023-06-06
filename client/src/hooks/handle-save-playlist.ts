@@ -3,14 +3,14 @@ import axios from "axios";
 import { AuthContext } from "../context/auth-context";
 import { Track } from "../types";
 
-export const useHandleSavePlaylist = (
-  id: string,
-  image: string,
-  name: string,
-  onAddPlaylist: (newPlaylist: any) => void
-) => {
+export const useHandleSavePlaylist = () => {
   const ctx = useContext(AuthContext);
-  const handleSave = async () => {
+  const handleSave = async (
+    id: string,
+    image: string,
+    name: string,
+    onAddPlaylist: (newPlaylist: any) => void
+  ) => {
     //1. Get the tracks
     let totalTracks: Track[] = [];
     try {

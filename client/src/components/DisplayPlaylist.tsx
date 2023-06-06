@@ -24,12 +24,7 @@ function DisplayPlaylist({
   onAddPlaylist,
   isDropdown = false,
 }: DisplayPlaylistProps) {
-  const handleSave = useHandleSavePlaylist(
-    playlist.id,
-    playlist.images?.[0]?.url,
-    playlist.name,
-    onAddPlaylist
-  );
+  const handleSave = useHandleSavePlaylist();
   return (
     <>
       {isDropdown && (
@@ -42,7 +37,12 @@ function DisplayPlaylist({
             },
           }}
           onClick={() => {
-            handleSave();
+            handleSave(
+              playlist.id,
+              playlist.images?.[0]?.url,
+              playlist.name,
+              onAddPlaylist
+            );
           }}
         >
           <ListItemAvatar>
@@ -68,7 +68,12 @@ function DisplayPlaylist({
               edge="end"
               aria-label="add"
               onClick={() => {
-                handleSave();
+                handleSave(
+                  playlist.id,
+                  playlist.images?.[0]?.url,
+                  playlist.name,
+                  onAddPlaylist
+                );
               }}
             >
               <AddCircleIcon />
