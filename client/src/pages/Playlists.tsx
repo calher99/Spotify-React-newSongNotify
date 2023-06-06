@@ -36,9 +36,6 @@ interface PlaylistSaved {
 function Playlists() {
   const ctx = React.useContext(AuthContext);
   const playlistCtx = React.useContext(PlayerContext);
-  const [userId, setUserId] = useState<string>("");
-  const [displayPlaylists, setDisplayPlaylists] = useState<boolean>(false);
-  const [playlists, setPlaylists] = useState<Playlist[]>();
   const [savedPlaylists, setSavedPlaylists] = useState<PlaylistSaved[]>([]);
 
   const [searchResults, setSearchResults] = useState<Playlist[]>([]);
@@ -123,11 +120,6 @@ function Playlists() {
     });
   };
 
-  // const togglePlaylists = async () => {
-  //   if (playlistCtx.userPlaylists) {
-  //     setDisplayPlaylists((prev: boolean) => !prev);
-  //   }
-  // };
   const submitSearchHandler = async (search: string, myPlaylist?: Playlist) => {
     if (myPlaylist) {
       console.log(myPlaylist);
@@ -160,13 +152,7 @@ function Playlists() {
           lg={4}
           sx={{ display: "flex", flexDirection: "column" }}
         >
-          <Grid
-            item
-            // xs={12}
-            // md={6}
-            // lg={6}
-            // sx={{ backgroundColor: (theme) => theme.palette.grey[900] }}
-          >
+          <Grid item>
             <Container
               sx={{
                 mt: 3,
@@ -181,7 +167,6 @@ function Playlists() {
                 onSubmit={submitSearchHandler}
                 options={(playlistCtx.userPlaylists as Playlist[]) || []}
               />
-              {/* <SearchBar onSubmit={submitSearchHandler} /> */}
               <ClickAwayListener onClickAway={() => setSearchResults([])}>
                 <Box>
                   {searchResults && (
@@ -195,55 +180,6 @@ function Playlists() {
               </ClickAwayListener>
             </Container>
           </Grid>
-          {/* <Grid
-            item
-
-            // sx={{ backgroundColor: (theme) => theme.palette.grey[800] }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Box
-                sx={{
-                  mt: 4,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Box>
-        
-                  <ToggleButton
-                    value="check"
-                    selected={displayPlaylists}
-                    onChange={togglePlaylists}
-                  >
-                    Add from my playlists
-                  </ToggleButton>
-                </Box>
-              </Box>
-              <Box
-                sx={{
-                  maxWidth: 360,
-                  height: 300,
-                  overflow: "auto",
-                }}
-              >
-                {displayPlaylists && (
-                  <DisplayPlaylists
-                    playlists={playlistCtx.userPlaylists as Playlist[]}
-                    onAddPlaylist={playlistSavedHandler}
-                  />
-                )}
-              </Box>
-            </Box>
-          </Grid> */}
         </Grid>
         <Grid item xs={12} md={8} lg={8} sx={{ mt: 2 }}>
           <Typography variant="h4">Your Saved Playlists</Typography>
