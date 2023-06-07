@@ -65,7 +65,15 @@ export const useHandleSavePlaylist = () => {
       //3.Update the parent state with the new saved playlist
       onAddPlaylist(responsePost.data.playlist);
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error) && error.response) {
+        console.log(error.response.data); // This will contain the error message from your API.
+        console.log(error.response.status); // This will contain the status code.
+
+        // You can use the error message to display an alert to the user
+        alert(`Error ${error.response.status}: ${error.response.data}`);
+      } else {
+        console.log(error);
+      }
     }
   };
   return handleSave;

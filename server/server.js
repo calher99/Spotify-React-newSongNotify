@@ -30,6 +30,17 @@ app.use("/api/spotify", spotifyRoutes);
 
 app.use("/api/playlists", playlistsRoutes);
 
+// turn errors to JSON format
+app.use((error, req, res, next) => {
+  if (error instanceof HttpError) {
+    return res.status(error.code).json({ message: error.message });
+  }
+  
+  // If it's not an HttpError
+
+  return res.status(500).json({ message: 'An unexpected error occurred.' });
+});
+
 app.use((req, res, next) => {
   const error = new HttpError("Could not find this route", 404);
   next(error);

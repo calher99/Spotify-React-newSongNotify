@@ -39,7 +39,7 @@ const add = async (req, res, next) => {
   });
   let user;
   try {
-    user = await User.findById(req.usedData.userId);
+    user = await User.findById(req.usedData.userId).populate('playlists');;
   } catch (error) {
     console.log(error);
     return next(
@@ -49,6 +49,16 @@ const add = async (req, res, next) => {
   if (!user) {
     return next(
       new HttpError("Could not find the user for the provided id", 404)
+    );
+  }
+  const duplicatePlaylist = user.playlists.find((playlist) => {
+    
+    return playlist.spotifyId === createdPlaylist.spotifyId;
+  });
+
+  if (duplicatePlaylist) {
+    return next(
+      new HttpError("Playlist with this SpotifyId already exists", 404)
     );
   }
   try {
@@ -115,7 +125,10 @@ const deletePlaylistById = async (req, res, next) => {
   let playlist;
   try {
     //populate makes us to get the information of the user also
-    playlist = await Playlist.findById(playlistId).populate("user", "playlists");
+    playlist = await Playlist.findById(playlistId).populate(
+      "user",
+      "playlists"
+    );
   } catch (error) {
     new HttpError("Something went wrong,try again please", 500);
   }
@@ -126,13 +139,10 @@ const deletePlaylistById = async (req, res, next) => {
     );
   }
   //We have the id of user because of populate
-  if(playlist.user.id !== req.usedData.userId){
-    return next(
-      new HttpError("You are not allowed to delete this place"),
-      401
-    );
+  if (playlist.user.id !== req.usedData.userId) {
+    return next(new HttpError("You are not allowed to delete this place"), 401);
   }
-  
+
   try {
     //For ChatGPT: We need to delete the playlist and also delete it from the user playlists
     const sess = await mongoose.startSession();
@@ -143,7 +153,7 @@ const deletePlaylistById = async (req, res, next) => {
       { $pull: { playlists: playlist._id } },
       { session: sess, new: true }
     );
-    
+
     await sess.commitTransaction();
   } catch (error) {
     console.log(error);
@@ -152,11 +162,9 @@ const deletePlaylistById = async (req, res, next) => {
     );
   }
 
-  
   res.status(200); //Convention is 201 when you submit something correctly
   res.json({ message: "Deleted playlist" });
 };
-
 
 exports.deletePlaylistById = deletePlaylistById;
 exports.add = add;
