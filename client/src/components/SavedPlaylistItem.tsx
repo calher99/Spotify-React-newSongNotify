@@ -188,7 +188,8 @@ function SavedPlaylistItem({
               TransitionProps={{ timeout: 600 }}
               title="Show"
             >
-              <Badge badgeContent={newTracks.length} color="primary">
+              {/* FOR CHAT GPT I want the badge to have this color: #1DB954 but ot does not let me */}
+              <Badge badgeContent={newTracks.length} color="success">
                 <IconButton
                   edge="end"
                   aria-label="comments"
