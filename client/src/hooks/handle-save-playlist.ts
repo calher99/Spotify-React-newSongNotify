@@ -1,16 +1,20 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/auth-context";
 import { Track } from "../types";
 
 export const useHandleSavePlaylist = () => {
   const ctx = useContext(AuthContext);
+  const [errorMessage, setErrorMessage] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const handleSave = async (
     id: string,
     image: string,
     name: string,
     onAddPlaylist: (newPlaylist: any) => void
   ) => {
+    setIsLoading(true);
     //1. Get the tracks
     let totalTracks: Track[] = [];
     try {
@@ -64,17 +68,24 @@ export const useHandleSavePlaylist = () => {
 
       //3.Update the parent state with the new saved playlist
       onAddPlaylist(responsePost.data.playlist);
+      setIsLoading(false);
+      setErrorMessage("Playlist saved");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.log(error.response.data); // This will contain the error message from your API.
         console.log(error.response.status); // This will contain the status code.
 
         // You can use the error message to display an alert to the user
-        alert(`Error ${error.response.status}: ${error.response.data}`);
+        // HandleSave should return the error message for us to call the snackBar
+        setErrorMessage(error.response.data);
       } else {
         console.log(error);
       }
+      setIsLoading(false);
     }
   };
-  return handleSave;
+  const clearError = () => {
+    setErrorMessage(null);
+  };
+  return { handleSave, errorMessage, isLoading, clearError };
 };

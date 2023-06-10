@@ -24,7 +24,7 @@ const SearchAutocomplete: React.FC<SearchBarProps> = ({
   onSubmit,
   onAddPlaylist,
 }) => {
-  const handleSave = useHandleSavePlaylist();
+  const { handleSave } = useHandleSavePlaylist();
   const [inputValue, setInputValue] = React.useState("");
   const [selectedOption, setSelectedOption] = React.useState<Playlist | null>(
     null
