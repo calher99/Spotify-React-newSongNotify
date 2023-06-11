@@ -15,6 +15,7 @@ import { Playlist } from "../types";
 
 import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
 import { useState } from "react";
+import { useSnackbar } from "notistack";
 
 interface DisplayPlaylistProps {
   playlist: Playlist;
@@ -27,9 +28,7 @@ function DisplayPlaylist({
   onAddPlaylist,
   isDropdown = false,
 }: DisplayPlaylistProps) {
-  const { handleSave, errorMessage, isLoading, clearError } =
-    useHandleSavePlaylist();
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+  const { handleSave, isLoading } = useHandleSavePlaylist();
 
   return (
     <>
@@ -80,8 +79,6 @@ function DisplayPlaylist({
                   playlist.name,
                   onAddPlaylist
                 );
-                setOpenSnackbar(true);
-                console.log(errorMessage);
               }}
             >
               <AddCircleIcon />
@@ -100,21 +97,10 @@ function DisplayPlaylist({
           <ListItemText primary={playlist.name} />
         </ListItem>
       )}
-      {/* <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        message="Hello"
-        // action={action}
-      /> */}
+
       <Backdrop open={isLoading} style={{ zIndex: 9999, color: "#fff" }}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      {errorMessage && (
-        <div>
-          <p>An error occurred: {errorMessage.message}</p>
-          <button onClick={clearError}>Dismiss</button>
-        </div>
-      )}
     </>
   );
 }

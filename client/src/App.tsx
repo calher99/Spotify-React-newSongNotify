@@ -17,6 +17,7 @@ import Artists from "./pages/Artists";
 import Podcasts from "./pages/Podcasts";
 import { Playlist } from "./types";
 import axios from "axios";
+import { SnackbarProvider } from "notistack";
 
 const darkTheme = createTheme({
   palette: {
@@ -162,32 +163,34 @@ function App() {
             onClosePlayer: closePlayerHandler,
           }}
         >
-          <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
-            <BrowserRouter>
-              {token && <NavBar />}
-              <Routes>
-                {!token && <Route path="/" element={<SignIn />} />}
-                {token && <Route path="/" element={<Login />} />}
-                <Route path="/sign-up" element={<SignUp />} />
-                <Route path="/sign-in" element={<SignIn />} />
-                <Route
-                  path="/spotify-connection"
-                  element={<SpotifyConnection />}
-                />
-                <Route path="/playlists" element={<Playlists />} />
-                <Route path="/artists" element={<Artists />} />
-                <Route path="/podcasts" element={<Podcasts />} />
-              </Routes>
-              {isPlaying && (
-                <Player
-                  accessToken={spotiToken as string}
-                  trackUris={tracks as string[]}
-                  offset={indexToPlay as number}
-                />
-              )}
-            </BrowserRouter>
-          </ThemeProvider>
+          <SnackbarProvider>
+            <ThemeProvider theme={darkTheme}>
+              <CssBaseline />
+              <BrowserRouter>
+                {token && <NavBar />}
+                <Routes>
+                  {!token && <Route path="/" element={<SignIn />} />}
+                  {token && <Route path="/" element={<Login />} />}
+                  <Route path="/sign-up" element={<SignUp />} />
+                  <Route path="/sign-in" element={<SignIn />} />
+                  <Route
+                    path="/spotify-connection"
+                    element={<SpotifyConnection />}
+                  />
+                  <Route path="/playlists" element={<Playlists />} />
+                  <Route path="/artists" element={<Artists />} />
+                  <Route path="/podcasts" element={<Podcasts />} />
+                </Routes>
+                {isPlaying && (
+                  <Player
+                    accessToken={spotiToken as string}
+                    trackUris={tracks as string[]}
+                    offset={indexToPlay as number}
+                  />
+                )}
+              </BrowserRouter>
+            </ThemeProvider>
+          </SnackbarProvider>
         </PlayerContext.Provider>
       </AuthContext.Provider>
     </>

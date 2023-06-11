@@ -3,7 +3,9 @@ import * as React from "react";
 import {
   Autocomplete,
   Avatar,
+  Backdrop,
   Box,
+  CircularProgress,
   ListItem,
   ListItemAvatar,
   ListItemText,
@@ -24,7 +26,7 @@ const SearchAutocomplete: React.FC<SearchBarProps> = ({
   onSubmit,
   onAddPlaylist,
 }) => {
-  const { handleSave } = useHandleSavePlaylist();
+  const { handleSave, isLoading } = useHandleSavePlaylist();
   const [inputValue, setInputValue] = React.useState("");
   const [selectedOption, setSelectedOption] = React.useState<Playlist | null>(
     null
@@ -54,7 +56,6 @@ const SearchAutocomplete: React.FC<SearchBarProps> = ({
         onAddPlaylist
       );
 
-      //For ChatGPT why is this not working? I want to clear the inputs once I click one of the options
       setSelectedOption(null);
       setInputValue("");
     }
@@ -77,51 +78,56 @@ const SearchAutocomplete: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <Box component="form" onSubmit={handleFormSubmit} sx={{}}>
-      <Autocomplete
-        id="search-playlist"
-        freeSolo
-        options={options || []}
-        getOptionLabel={(option: Playlist | string) =>
-          typeof option === "string" ? option : option.name
-        }
-        inputValue={inputValue}
-        value={selectedOption} // control the value
-        onInputChange={handleInputChange}
-        onChange={handleOptionChange}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Search a playlist"
-            sx={{ borderRadius: 16 }}
-          />
-        )}
-        renderOption={(props, option, { selected }) => (
-          <ListItem
-            {...props}
-            sx={{
-              cursor: "pointer",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.1)",
-              },
-            }}
-          >
-            <ListItemAvatar>
-              <Avatar
-                alt={`Avatar ${option.name}`}
-                src={
-                  option.images?.[0]?.url ||
-                  "https://as1.ftcdn.net/jpg/03/77/20/86/1024W_F_377208629_UWr3LtC8xJqETdX3tsZ2vV8eRRniaZDv_NW1.jpg"
-                }
-                sx={{ width: 25, height: 25 }}
-              />
-            </ListItemAvatar>
-            <ListItemText secondary={option.name} />
-          </ListItem>
-        )}
-        sx={{ width: 250 }}
-      />
-    </Box>
+    <>
+      <Backdrop open={isLoading} style={{ zIndex: 9999, color: "#fff" }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Box component="form" onSubmit={handleFormSubmit} sx={{}}>
+        <Autocomplete
+          id="search-playlist"
+          freeSolo
+          options={options || []}
+          getOptionLabel={(option: Playlist | string) =>
+            typeof option === "string" ? option : option.name
+          }
+          inputValue={inputValue}
+          value={selectedOption} // control the value
+          onInputChange={handleInputChange}
+          onChange={handleOptionChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search a playlist"
+              sx={{ borderRadius: 16 }}
+            />
+          )}
+          renderOption={(props, option, { selected }) => (
+            <ListItem
+              {...props}
+              sx={{
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar
+                  alt={`Avatar ${option.name}`}
+                  src={
+                    option.images?.[0]?.url ||
+                    "https://as1.ftcdn.net/jpg/03/77/20/86/1024W_F_377208629_UWr3LtC8xJqETdX3tsZ2vV8eRRniaZDv_NW1.jpg"
+                  }
+                  sx={{ width: 25, height: 25 }}
+                />
+              </ListItemAvatar>
+              <ListItemText secondary={option.name} />
+            </ListItem>
+          )}
+          sx={{ width: 250 }}
+        />
+      </Box>
+    </>
   );
 };
 
