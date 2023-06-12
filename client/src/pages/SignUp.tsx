@@ -12,7 +12,6 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth-context";
-import { useHttpClient } from "../hooks/http-hook";
 
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";

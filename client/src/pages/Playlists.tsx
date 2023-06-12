@@ -22,6 +22,7 @@ import { PlayerContext } from "../context/player-context";
 import SearchResults from "../components/SearchResults";
 import SearchAutocomplete from "../components/SearchAutocomplete";
 import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
+import { useNavigate } from "react-router-dom";
 
 interface PlaylistSaved {
   id: string;
@@ -41,7 +42,12 @@ function Playlists() {
 
   const [searchResults, setSearchResults] = useState<Playlist[]>([]);
 
+  let navigate = useNavigate();
+
   useEffect(() => {
+    //If no token we redirect
+    if (!ctx.token) navigate("/");
+
     //Load always all the user Spotify Playlists
     const getPlaylistsHandler = async () => {
       try {
@@ -66,6 +72,7 @@ function Playlists() {
             }
           } catch (error) {
             console.log(error);
+            navigate("/");
           }
         }
         //Set ctx

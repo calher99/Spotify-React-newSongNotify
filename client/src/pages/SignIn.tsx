@@ -12,7 +12,6 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { AuthContext } from "../context/auth-context";
-import { useHttpClient } from "../hooks/http-hook";
 
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
