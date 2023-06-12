@@ -27,7 +27,6 @@ function SignIn() {
   let navigate = useNavigate();
   const ctx = React.useContext(AuthContext);
 
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [errorEmail, setErrorEmail] = React.useState<boolean>(false);
   const [errorPassword, setErrorPassword] = React.useState<boolean>(false);
   const [errorServerMessageEmail, setErrorServerMessageEmail] =
@@ -54,12 +53,10 @@ function SignIn() {
         method: "POST",
         data: { email: data.email, password: data.password },
       });
-      console.log(responseData);
       ctx.onLogin(responseData.data.userId, responseData.data.token);
       window.location.href = `${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}&scope=${process.env.REACT_APP_SCOPE}`;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        console.log(error.response.data.message);
         if (error.response.data.message === "Incorrect email") {
           setErrorEmail(true);
           setErrorServerMessageEmail(error.response.data.message);
@@ -106,7 +103,6 @@ function SignIn() {
               autoFocus
               {...methods.register("email")}
               error={!!methods.formState.errors.email || errorEmail}
-              // For chatGPT how can I add in the helperText errorServerMessage
               helperText={
                 methods.formState.errors.email?.message ||
                 errorServerMessageEmail ||

@@ -17,6 +17,7 @@ import { useHttpClient } from "../hooks/http-hook";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import axios from "axios";
 
 interface signUpForm {
   name: string;
@@ -29,7 +30,9 @@ function SignUp() {
   let navigate = useNavigate();
   const ctx = React.useContext(AuthContext);
 
-  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const [errorEmail, setErrorEmail] = React.useState<boolean>(false);
+  const [errorServerMessageEmail, setErrorServerMessageEmail] =
+    React.useState<string>("");
 
   const formSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -47,24 +50,27 @@ function SignUp() {
     data: signUpForm
   ) => {
     try {
-      const responseData = await sendRequest(
-        "http://localhost:4080/api/users/signup",
-        "POST",
-        JSON.stringify({
+      let responseData = await axios(`http://localhost:4080/api/users/signup`, {
+        method: "POST",
+        data: {
           name: data.name,
           lastName: data.lastName,
           email: data.email,
           password: data.password,
-        }),
-        { "Content-Type": "application/json" }
-      );
-
-      ctx.onLogin(responseData.userId, responseData.token);
+        },
+      });
+      ctx.onLogin(responseData.data.userId, responseData.data.token);
       window.location.href = `${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}&scope=${process.env.REACT_APP_SCOPE}`;
-      // navigate("../playlists");
     } catch (error) {
-      console.log(error);
-      //So that if there is an error we dont log in
+      if (axios.isAxiosError(error) && error.response) {
+        if (
+          error.response.data.message === "Email already exists" ||
+          error.response.data.message === "email invalid"
+        )
+          console.log(error.response.data.message);
+        setErrorEmail(true);
+        setErrorServerMessageEmail(error.response.data.message);
+      }
     }
   };
   return (
@@ -118,8 +124,12 @@ function SignUp() {
                   label="Email Address *"
                   autoComplete="email"
                   {...methods.register("email")}
-                  error={!!methods.formState.errors.email}
-                  helperText={methods.formState.errors.email?.message ?? ""}
+                  error={!!methods.formState.errors.email || errorEmail}
+                  helperText={
+                    methods.formState.errors.email?.message ||
+                    errorServerMessageEmail ||
+                    ""
+                  }
                 />
               </Grid>
               <Grid item xs={12}>
@@ -132,14 +142,6 @@ function SignUp() {
                   {...methods.register("password")}
                   error={!!methods.formState.errors.password}
                   helperText={methods.formState.errors.password?.message ?? ""}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
                 />
               </Grid>
             </Grid>
