@@ -17,6 +17,7 @@ import { useHttpClient } from "../hooks/http-hook";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import axios from "axios";
 
 interface signInForm {
   email: string;
@@ -27,6 +28,12 @@ function SignIn() {
   const ctx = React.useContext(AuthContext);
 
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const [errorEmail, setErrorEmail] = React.useState<boolean>(false);
+  const [errorPassword, setErrorPassword] = React.useState<boolean>(false);
+  const [errorServerMessageEmail, setErrorServerMessageEmail] =
+    React.useState<string>("");
+  const [errorServerMessagePassword, setErrorServerMessagePassword] =
+    React.useState<string>("");
 
   const formSchema = Yup.object().shape({
     email: Yup.string()
@@ -43,21 +50,28 @@ function SignIn() {
     data: signInForm
   ) => {
     try {
-      const responseData = await sendRequest(
-        "http://localhost:4080/api/users/signin",
-        "POST",
-        JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
-        { "Content-Type": "application/json" }
-      );
-      ctx.onLogin(responseData.userId, responseData.token);
+      let responseData = await axios(`http://localhost:4080/api/users/signin`, {
+        method: "POST",
+        data: { email: data.email, password: data.password },
+      });
+      console.log(responseData);
+      ctx.onLogin(responseData.data.userId, responseData.data.token);
       window.location.href = `${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}&scope=${process.env.REACT_APP_SCOPE}`;
-      // navigate("../playlists");
     } catch (error) {
-      console.log(error);
-      //So that if there is an error we dont log in
+      if (axios.isAxiosError(error) && error.response) {
+        console.log(error.response.data.message);
+        if (error.response.data.message === "Incorrect email") {
+          setErrorEmail(true);
+          setErrorServerMessageEmail(error.response.data.message);
+          setErrorPassword(false);
+          setErrorServerMessagePassword("");
+        } else if (error.response.data.message === "Incorrect password") {
+          setErrorPassword(true);
+          setErrorServerMessagePassword(error.response.data.message);
+          setErrorEmail(false);
+          setErrorServerMessageEmail("");
+        }
+      }
     }
   };
 
@@ -91,8 +105,13 @@ function SignIn() {
               autoComplete="email"
               autoFocus
               {...methods.register("email")}
-              error={!!methods.formState.errors.email}
-              helperText={methods.formState.errors.email?.message ?? ""}
+              error={!!methods.formState.errors.email || errorEmail}
+              // For chatGPT how can I add in the helperText errorServerMessage
+              helperText={
+                methods.formState.errors.email?.message ||
+                errorServerMessageEmail ||
+                ""
+              }
             />
             <TextField
               margin="normal"
@@ -103,8 +122,12 @@ function SignIn() {
               id="password"
               autoComplete="current-password"
               {...methods.register("password")}
-              error={!!methods.formState.errors.password}
-              helperText={methods.formState.errors.password?.message ?? ""}
+              error={!!methods.formState.errors.password || errorPassword}
+              helperText={
+                methods.formState.errors.password?.message ||
+                errorServerMessagePassword ||
+                ""
+              }
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
