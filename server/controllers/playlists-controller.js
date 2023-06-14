@@ -12,7 +12,7 @@ const getPlaylistsByUserId = async (req, res, next) => {
   } catch (error) {
     return next(
       new HttpError(
-        "Error while retrieving the playlists, try again please",
+        "Error while retrieving the playlists",
         500
       )
     );
@@ -58,7 +58,7 @@ const add = async (req, res, next) => {
 
   if (duplicatePlaylist) {
     return next(
-      new HttpError("Playlist with this SpotifyId already exists", 404)
+      new HttpError("Playlist already saved", 404)
     );
   }
   try {

@@ -108,7 +108,7 @@ function App() {
     const refreshToken = async () => {
       try {
         const responseData = await axios({
-          url: "http://localhost:4080/api/spotify/refresh",
+          url: `${process.env.REACT_APP_BACKEND_URL}/api/spotify/refresh`,
           method: "POST",
           data: { refreshToken: storedSpotiData.refreshSpoti },
           headers: {

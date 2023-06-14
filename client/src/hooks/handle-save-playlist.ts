@@ -59,7 +59,7 @@ export const useHandleSavePlaylist = () => {
     //2.send it to the db
     try {
       const responsePost = await axios({
-        url: "http://localhost:4080/api/playlists/add",
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/playlists/add`,
         method: "POST",
         data: playlistObject,
         headers: {

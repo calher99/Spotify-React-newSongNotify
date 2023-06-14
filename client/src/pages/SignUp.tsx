@@ -49,15 +49,18 @@ function SignUp() {
     data: signUpForm
   ) => {
     try {
-      let responseData = await axios(`http://localhost:4080/api/users/signup`, {
-        method: "POST",
-        data: {
-          name: data.name,
-          lastName: data.lastName,
-          email: data.email,
-          password: data.password,
-        },
-      });
+      let responseData = await axios(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/signup`,
+        {
+          method: "POST",
+          data: {
+            name: data.name,
+            lastName: data.lastName,
+            email: data.email,
+            password: data.password,
+          },
+        }
+      );
       ctx.onLogin(responseData.data.userId, responseData.data.token);
       window.location.href = `${process.env.REACT_APP_AUTH_ENDPOINT}?client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}&response_type=${process.env.REACT_APP_RESPONSE_TYPE}&scope=${process.env.REACT_APP_SCOPE}`;
     } catch (error) {

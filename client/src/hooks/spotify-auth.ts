@@ -11,7 +11,7 @@ export const useSpotifyAuth = (code: string) => {
     const getTokens = async () => {
       try {
         const responseData = await axios({
-          url: "http://localhost:4080/api/spotify/login",
+          url: `${process.env.REACT_APP_BACKEND_URL}/api/spotify/login`,
           method: "POST",
           data: { code: code },
           headers: {

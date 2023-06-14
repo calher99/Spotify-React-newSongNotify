@@ -5,11 +5,23 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
+const { validationResult } = require("express-validator");
+
 const getUsers = async (req, res, next) => {};
 
 const signUp = async (req, res, next) => {
-  const { name, lastName, email, password } = req.body;
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    const firstError = errors.array()[0];
+    return next(
+      new HttpError(`${firstError.path} invalid` , 422),
+    );
+  }
+
+  const { name, lastName, email, password } = req.body;
+ 
   let hasUser;
   try {
     hasUser = await User.findOne({ email: email });
@@ -21,7 +33,7 @@ const signUp = async (req, res, next) => {
 
   if (hasUser) {
     return next(
-      new HttpError("Could not create user, email already exists", 422)
+      new HttpError("Email already exists", 422)
     );
   }
 
@@ -77,7 +89,7 @@ const logIn = async (req, res, next) => {
   }
 
   if (!identifiedUser) {
-    return next(new HttpError("Could not find the user", 401));
+    return next(new HttpError("Incorrect email", 401));
   }
 
   let isValidPassword = false;

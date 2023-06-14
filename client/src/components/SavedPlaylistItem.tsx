@@ -114,7 +114,7 @@ function SavedPlaylistItem({
         }
         const trackIds = totalTracks.map((item: any) => item.track.id);
         await axios({
-          url: `http://localhost:4080/api/playlists/update/${playlist.id}`,
+          url: `${process.env.REACT_APP_BACKEND_URL}/api/playlists/update/${playlist.id}`,
           method: "POST",
           data: trackIds,
           headers: {
@@ -144,7 +144,7 @@ function SavedPlaylistItem({
     //TI Maybe add a modal to confirm that we want to deleete?
     try {
       await axios({
-        url: `http://localhost:4080/api/playlists/delete/${playlist.id}`,
+        url: `${process.env.REACT_APP_BACKEND_URL}/api/playlists/delete/${playlist.id}`,
         method: "DELETE",
         headers: {
           Authorization: "Bearer " + ctx.token,

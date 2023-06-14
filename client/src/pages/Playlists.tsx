@@ -89,7 +89,7 @@ function Playlists() {
     const getUserPlaylists = async () => {
       try {
         const responseData = await axios(
-          `http://localhost:4080/api/playlists/${ctx.userId}`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/playlists/${ctx.userId}`,
           {
             method: "GET",
           }
