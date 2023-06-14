@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Playlist, Track } from "../types";
+import { Track } from "../types";
 import {
   Avatar,
   Box,
@@ -9,8 +9,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import Fade from "@mui/material/Fade";
+
 import { PlayerContext } from "../context/player-context";
 import Dropdown from "./Dropdown";
 import { AuthContext } from "../context/auth-context";

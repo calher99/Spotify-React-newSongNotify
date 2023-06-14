@@ -2,20 +2,16 @@ import {
   Avatar,
   Backdrop,
   CircularProgress,
-  Divider,
   IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Snackbar,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 import { Playlist } from "../types";
 
 import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
-import { useState } from "react";
-import { useSnackbar } from "notistack";
 
 interface DisplayPlaylistProps {
   playlist: Playlist;

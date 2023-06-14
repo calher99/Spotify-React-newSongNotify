@@ -10,7 +10,7 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import { AuthContext } from "./context/auth-context";
 import SpotifyConnection from "./pages/SpotifyConnection";
-import { useHttpClient } from "./hooks/http-hook";
+
 import { PlayerContext } from "./context/player-context";
 import Player from "./components/Player";
 import Artists from "./pages/Artists";

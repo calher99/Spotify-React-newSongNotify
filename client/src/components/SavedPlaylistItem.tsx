@@ -19,7 +19,6 @@ import { AuthContext } from "../context/auth-context";
 import React, { useEffect, useState } from "react";
 import { Track } from "../types";
 import DisplayTracks from "./DisplayTracks";
-import CloseIcon from "@mui/icons-material/Close";
 import { PlayerContext } from "../context/player-context";
 import MenuButtons from "./MenuButtons";
 
@@ -67,14 +66,6 @@ function SavedPlaylistItem({
         (item: any) => !playlist.songs.includes(item.track.id)
       );
       setNewTracks(extractedNewTrack.map((track: any) => track.track));
-
-      //Show the new songs beneath
-      // if (newTracks.length > 0) {
-      //   setShowTracks(true);
-      // } else {
-      //   //Shoudl show a modal or something
-      //   console.log("nothing new since the last time!");
-      // }
     } catch (error) {
       console.log(error);
     }

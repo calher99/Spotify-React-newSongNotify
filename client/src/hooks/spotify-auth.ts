@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useHttpClient } from "./http-hook";
 import axios from "axios";
 
 export const useSpotifyAuth = (code: string) => {

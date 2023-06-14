@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useSpotifyAuth } from "../hooks/spotify-auth";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import axios from "axios";
 import { AuthContext } from "../context/auth-context";

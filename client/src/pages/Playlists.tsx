@@ -1,27 +1,23 @@
 import {
-  Button,
   Container,
   Box,
   Grid,
-  Card,
-  CardHeader,
   Typography,
   ClickAwayListener,
 } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 
 import React, { useEffect, useState } from "react";
-import SearchBar from "../components/SearchBar";
-import { useHttpClient } from "../hooks/http-hook";
+
 import { AuthContext } from "../context/auth-context";
 import DisplayPlaylists from "../components/DisplayPlaylists";
 import { Playlist } from "../types";
 import axios from "axios";
 import SavedPlaylists from "../components/SavedPlaylists";
 import { PlayerContext } from "../context/player-context";
-import SearchResults from "../components/SearchResults";
+
 import SearchAutocomplete from "../components/SearchAutocomplete";
-import { useHandleSavePlaylist } from "../hooks/handle-save-playlist";
+
 import { useNavigate } from "react-router-dom";
 
 interface PlaylistSaved {
