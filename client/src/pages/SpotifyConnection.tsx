@@ -66,6 +66,9 @@ function SpotifyConnection() {
       >
         <CircularProgress sx={{ color: "#1DB954" }} />
         <Typography>Loading Spotify Data</Typography>
+        <Typography>
+          If server was sleeping it can take up to 30 seconds...
+        </Typography>
       </Box>
     </>
   );

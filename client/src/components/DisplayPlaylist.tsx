@@ -1,7 +1,6 @@
 import {
   Avatar,
   Backdrop,
-  CircularProgress,
   IconButton,
   ListItem,
   ListItemAvatar,
@@ -94,9 +93,10 @@ function DisplayPlaylist({
         </ListItem>
       )}
 
-      <Backdrop open={isLoading} style={{ zIndex: 9999, color: "#fff" }}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Backdrop
+        open={isLoading}
+        style={{ zIndex: 9999, color: "#fff" }}
+      ></Backdrop>
     </>
   );
 }
