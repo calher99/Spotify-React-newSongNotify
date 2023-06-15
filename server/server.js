@@ -35,9 +35,7 @@ app.use((error, req, res, next) => {
   if (error instanceof HttpError) {
     return res.status(error.code).json({ message: error.message });
   }
-  
   // If it's not an HttpError
-
   return res.status(500).json({ message: 'An unexpected error occurred.' });
 });
 
@@ -47,9 +45,9 @@ app.use((req, res, next) => {
 });
 
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@spotify-app.2yndbvy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`)
   .then(() => {
-    app.listen(4080);
+    app.listen(process.env.PORT || 4080);
     console.log("Succesfully connected");
   })
   .catch((error) => {
