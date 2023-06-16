@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth-context";
 
@@ -29,7 +30,7 @@ export default function NavBar() {
     >
       <AppBar position="static">
         <Toolbar sx={{ display: "flex" }}>
-          <IconButton
+          {/* <IconButton
             size="large"
             edge="start"
             color="inherit"
@@ -37,7 +38,7 @@ export default function NavBar() {
             sx={{ mr: 2 }}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
           <Box sx={{ display: "flex", gap: 5, flex: 1 }}>
             <Typography
               variant="h6"
@@ -74,9 +75,16 @@ export default function NavBar() {
             </Typography>
           </Box>
 
-          <Button color="inherit" onClick={handleLogOut}>
-            Logout
-          </Button>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={handleLogOut}
+          >
+            <LogoutIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </Box>

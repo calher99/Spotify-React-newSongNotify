@@ -165,6 +165,8 @@ function Playlists() {
                 flexDirection: "column",
                 alignItems: "start",
                 width: 300,
+                // height: 300,
+                marginBottom: -50,
               }}
             >
               <SearchAutocomplete
